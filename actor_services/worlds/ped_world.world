@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<sdf version="1.5">
+    <world name="default">
+        <gui>
+            <camera name="user_camera">
+                <pose>0 -18 8.0 0 0.523 1.5707</pose>
+            </camera>
+        </gui>
+        <light name="sun" type="directional">
+            <cast_shadows>1</cast_shadows>
+            <pose>0 0 10 0 -0 0</pose>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+            <attenuation>
+                <range>1000</range>
+                <constant>0.9</constant>
+                <linear>0.01</linear>
+                <quadratic>0.001</quadratic>
+            </attenuation>
+            <direction>0 0.5 -0.9</direction>
+        </light>
+
+        <light name="point_light" type="point">
+            <pose>0 -0.377195 6.59868 0 -0 0</pose>
+            <diffuse>0.784314 0.784314 0.784314 1</diffuse>
+            <specular>0.0980392 0.0980392 0.0980392 1</specular>
+            <attenuation>
+                <range>50</range>
+                <constant>0.8</constant>
+                <linear>0</linear>
+                <quadratic>0.001</quadratic>
+            </attenuation>
+            <cast_shadows>0</cast_shadows>
+            <direction>0 0 -1</direction>
+        </light>
+
+        <include>
+            <uri>model://ground_plane</uri>
+        </include>
+<actor name="actor0"><pose>4.76556290258 -3.34674480415 1.02 0 0 0</pose><skin><filename>stand_up.dae</filename><scale>1</scale></skin><animation name="walking"><filename>walk.dae</filename><scale>1</scale><interpolate_x>true</interpolate_x></animation><plugin filename="/home/tyler/catkin_ws/src/actorplugin/lib/libactorplugin_ros.so" name="None"><target>-2.80677548162 -3.07646703075 1.02</target><target_weight>1.5</target_weight><obstacle_weight>1.5</obstacle_weight><animation_factor>6.43618859576</animation_factor><ignore_obstacles><model>caffe</model><model>ground_plane</model></ignore_obstacles></plugin></actor><actor name="actor1"><pose>-3.04533035715 -0.45704221319 1.02 0 0 0</pose><skin><filename>talk_a.dae</filename><scale>1</scale></skin><animation name="walking"><filename>walk.dae</filename><scale>1</scale><interpolate_x>true</interpolate_x></animation><plugin filename="/home/tyler/catkin_ws/src/actorplugin/lib/libactorplugin_ros.so" name="None"><target>3.6185135841 -5.85086892331 1.02</target><target_weight>1.5</target_weight><obstacle_weight>1.5</obstacle_weight><animation_factor>5.49642446195</animation_factor><ignore_obstacles><model>caffe</model><model>ground_plane</model></ignore_obstacles></plugin></actor><actor name="actor2"><pose>-4.78640578575 -0.568533437558 1.02 0 0 0</pose><skin><filename>run.dae</filename><scale>1</scale></skin><animation name="walking"><filename>walk.dae</filename><scale>1</scale><interpolate_x>true</interpolate_x></animation><plugin filename="/home/tyler/catkin_ws/src/actorplugin/lib/libactorplugin_ros.so" name="None"><target>5.05855377496 -4.01048556204 1.02</target><target_weight>1.5</target_weight><obstacle_weight>1.5</obstacle_weight><animation_factor>6.27256276713</animation_factor><ignore_obstacles><model>caffe</model><model>ground_plane</model></ignore_obstacles></plugin></actor><actor name="actor3"><pose>2.22951902253 -4.3446014284 1.02 0 0 0</pose><skin><filename>talk_b.dae</filename><scale>1</scale></skin><animation name="walking"><filename>walk.dae</filename><scale>1</scale><interpolate_x>true</interpolate_x></animation><plugin filename="/home/tyler/catkin_ws/src/actorplugin/lib/libactorplugin_ros.so" name="None"><target>5.42208816195 -1.11066415094 1.02</target><target_weight>1.5</target_weight><obstacle_weight>1.5</obstacle_weight><animation_factor>6.01071252187</animation_factor><ignore_obstacles><model>caffe</model><model>ground_plane</model></ignore_obstacles></plugin></actor><actor name="actor4"><pose>-3.887484261 -5.71521925953 1.02 0 0 0</pose><skin><filename>walk.dae</filename><scale>1</scale></skin><animation name="walking"><filename>walk.dae</filename><scale>1</scale><interpolate_x>true</interpolate_x></animation><plugin filename="/home/tyler/catkin_ws/src/actorplugin/lib/libactorplugin_ros.so" name="None"><target>4.12336759276 4.24354657348 1.02</target><target_weight>1.5</target_weight><obstacle_weight>1.5</obstacle_weight><animation_factor>5.52328084998</animation_factor><ignore_obstacles><model>caffe</model><model>ground_plane</model></ignore_obstacles></plugin></actor><actor name="actor5"><pose>-3.5529751411 4.73859038754 1.02 0 0 0</pose><skin><filename>stand_up.dae</filename><scale>1</scale></skin><animation name="walking"><filename>walk.dae</filename><scale>1</scale><interpolate_x>true</interpolate_x></animation><plugin filename="/home/tyler/catkin_ws/src/actorplugin/lib/libactorplugin_ros.so" name="None"><target>-3.2110377071 5.19843041513 1.02</target><target_weight>1.5</target_weight><obstacle_weight>1.5</obstacle_weight><animation_factor>5.06766017256</animation_factor><ignore_obstacles><model>caffe</model><model>ground_plane</model></ignore_obstacles></plugin></actor><actor name="actor6"><pose>-2.64235957315 -2.89407415285 1.02 0 0 0</pose><skin><filename>talk_a.dae</filename><scale>1</scale></skin><animation name="walking"><filename>walk.dae</filename><scale>1</scale><interpolate_x>true</interpolate_x></animation><plugin filename="/home/tyler/catkin_ws/src/actorplugin/lib/libactorplugin_ros.so" name="None"><target>-2.92881176379 1.07117732669 1.02</target><target_weight>1.5</target_weight><obstacle_weight>1.5</obstacle_weight><animation_factor>6.56736185275</animation_factor><ignore_obstacles><model>caffe</model><model>ground_plane</model></ignore_obstacles></plugin></actor><actor name="actor7"><pose>2.92118149275 -4.03451872132 1.02 0 0 0</pose><skin><filename>talk_a.dae</filename><scale>1</scale></skin><animation name="walking"><filename>walk.dae</filename><scale>1</scale><interpolate_x>true</interpolate_x></animation><plugin filename="/home/tyler/catkin_ws/src/actorplugin/lib/libactorplugin_ros.so" name="None"><target>-3.97453023754 -1.21961393519 1.02</target><target_weight>1.5</target_weight><obstacle_weight>1.5</obstacle_weight><animation_factor>5.04639365293</animation_factor><ignore_obstacles><model>caffe</model><model>ground_plane</model></ignore_obstacles></plugin></actor><actor name="actor8"><pose>4.45711873002 -0.604424234295 1.02 0 0 0</pose><skin><filename>walk.dae</filename><scale>1</scale></skin><animation name="walking"><filename>walk.dae</filename><scale>1</scale><interpolate_x>true</interpolate_x></animation><plugin filename="/home/tyler/catkin_ws/src/actorplugin/lib/libactorplugin_ros.so" name="None"><target>2.8277229042 -1.59446702591 1.02</target><target_weight>1.5</target_weight><obstacle_weight>1.5</obstacle_weight><animation_factor>6.63288114815</animation_factor><ignore_obstacles><model>caffe</model><model>ground_plane</model></ignore_obstacles></plugin></actor><actor name="actor9"><pose>2.76361785741 5.62757495969 1.02 0 0 0</pose><skin><filename>moonwalk.dae</filename><scale>1</scale></skin><animation name="walking"><filename>walk.dae</filename><scale>1</scale><interpolate_x>true</interpolate_x></animation><plugin filename="/home/tyler/catkin_ws/src/actorplugin/lib/libactorplugin_ros.so" name="None"><target>1.38641066883 -4.88167432672 1.02</target><target_weight>1.5</target_weight><obstacle_weight>1.5</obstacle_weight><animation_factor>5.04072628992</animation_factor><ignore_obstacles><model>caffe</model><model>ground_plane</model></ignore_obstacles></plugin></actor></world>
+</sdf>

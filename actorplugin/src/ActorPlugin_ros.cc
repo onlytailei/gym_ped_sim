@@ -16,8 +16,6 @@
  */
 
 #include <functional>
-
-
 #include <ignition/math.hh>
 #include <gazebo/physics/physics.hh>
 #include <gazebo/math/gzmath.hh>
@@ -115,27 +113,14 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   // Register the callbackqueue to the node
   this->rosNode->setCallbackQueue(&this->rosQueue);
   
-  
+  // Create the set position service  
   this->SetPoseService = this->rosNode->advertiseService("/"+this->actor->GetName()+"/SetActorPosition",
       &ActorPlugin::SetPoseCallback, this);
   
+  // Create the set target position service  
   this->SetTargetService = this->rosNode->advertiseService("/"+this->actor->GetName()+"/SetActorTarget",
       &ActorPlugin::SetTargetCallback, this);
   
-
-  // Create a named topic, and subscribe to it.
-  //ros::SubscribeOptions so =
-    //ros::SubscribeOptions::create<std_msgs::Float32MultiArray>(
-        //"/" + this->actor->GetName() + "/actor_target_position",
-        //1,
-        //boost::bind(&ActorPlugin::OnRosMsg, this, _1),
-        //ros::VoidPtr(), &this->rosQueue);
-  //this->rosSub = this->rosNode->subscribe(so);
-  
-  // Aother way to create the sub 
-  //this->rosSub = this->rosNode->subscribe("/" + this->actor->GetName() + "/actor_target_position",
-        //1,&ActorPlugin::OnRosMsg, this);
-
   // Spin up the queue helper thread.
   this->rosQueueThread =
     std::thread(std::bind(&ActorPlugin::QueueThread, this));
@@ -211,14 +196,12 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   double distance = pos.Length();
 
   // Choose a new target position if the actor has reached its current
-  // target.
+  // target. It will go back to the start position defaultly.
   if (distance < 0.3)
   {
-    //this->ChooseNewTarget();
     ignition::math::Vector3d temp = this->start_location; 
     this-> start_location = this->target;
     this->target = temp;
-    
     pos = this->target - pose.Pos();
   }
 
@@ -260,6 +243,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   this->lastUpdate = _info.simTime;
 }
 
+// Set target position service callback. Response is the target position right now
 bool ActorPlugin::SetTargetCallback(actor_services::SetPose::Request& req, actor_services::SetPose::Response& res){
   res.x = this->target.X();
   res.y = this->target.Y();
@@ -273,11 +257,11 @@ bool ActorPlugin::SetTargetCallback(actor_services::SetPose::Request& req, actor
   return true;
 }
 
+// Set actor position service callback. Response is the position right now
 bool ActorPlugin::SetPoseCallback(actor_services::SetPose::Request& req,
              actor_services::SetPose::Response& res){
   ignition::math::Pose3d pose = this->actor->WorldPose();
   ignition::math::Vector3d pos = pose.Pos();
-  //ignition::math::Vector3d rpy = pose.Rot().Euler();
   res.x = pos.X();
   res.y = pos.Y();
   if (req.set_flag == true)

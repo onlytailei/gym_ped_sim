@@ -2,6 +2,5 @@
 !actorplugin/lib/
 actorplugin/lib/*
 
-!actorplugin/build/
 actorplugin/build/*
 

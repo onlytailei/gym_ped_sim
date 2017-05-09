@@ -1,1 +1,1 @@
-# A ros gazebo plugin
+# A ros gazebo plugin for pedestrains
