@@ -257,7 +257,7 @@ bool ActorPlugin::SetTargetCallback(actor_services::SetPose::Request& req, actor
   return true;
 }
 
-// Set actor position service callback. Response is the position right now
+// \Set actor position service callback. Response is the position right now
 bool ActorPlugin::SetPoseCallback(actor_services::SetPose::Request& req,
              actor_services::SetPose::Response& res){
   ignition::math::Pose3d pose = this->actor->WorldPose();
@@ -266,10 +266,9 @@ bool ActorPlugin::SetPoseCallback(actor_services::SetPose::Request& req,
   res.y = pos.Y();
   if (req.set_flag == true)
   {
-    const math::Vector3 new_pose(req.new_x, req.new_y, pos.Z());
-    const math::Quaternion new_quaterion(pose.Rot());
-    const math::Pose newWorldPose(new_pose, new_quaterion); 
-    this->actor->SetWorldPose(newWorldPose);
+    pose.Pos().X(req.new_x);
+    pose.Pos().Y(req.new_y);
+    this->actor->SetWorldPose(pose);
   }
   return true;
 }
