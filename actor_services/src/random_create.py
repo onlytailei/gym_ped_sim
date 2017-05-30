@@ -35,7 +35,7 @@ skin_list = ["moonwalk.dae",
 
 
 actor_list = []
-for item in range(10):
+for item in range(2):
     actor = Element("actor", name="actor"+str(item))
 
     pose = Element("pose")

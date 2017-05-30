@@ -1,6 +1,6 @@
 #ignore
-!actorplugin/lib/
-actorplugin/lib/*
+!actor_plugin/lib/
+actor_plugin/lib/*
 
-actorplugin/build/*
+actor_plugin/build/*
 
