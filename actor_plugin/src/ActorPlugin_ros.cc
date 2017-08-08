@@ -243,7 +243,6 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
     // TODO: set to a good range.
     double neighborRange = 20.0;
 
-    ROS_ERROR("======model count: %d======",this->world->ModelCount());
     // Iterate over all neighbors in range of influence.
     for(unsigned int i = 0; i < this->world->ModelCount(); i++) {
       physics::ModelPtr currentAgent = this->world->ModelByIndex(i);
@@ -287,7 +286,8 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
       // Get sign of theta.
       int thetaSign = (theta == 0) ? (0) : (theta / std::abs(theta));
-
+      ROS_ERROR("abs theta: %d, thetaSign: %d", abs(theta),thetaSign);
+      ROS_ERROR("std abs theta: %lf, thetaSign: %d", std::abs(theta),thetaSign);
       // compute model parameter B = gamma * ||D||
       double B = gamma * interactionLength;
 
