@@ -118,12 +118,16 @@ namespace gazebo
     
     private: ros::ServiceServer SetTargetService;
     
+    private: ros::Publisher PosePublisher;
+    private: ros::Publisher VelPublisher;
     private: bool SetPoseCallback(actor_services::SetPose::Request&,
                  actor_services::SetPose::Response&);
 
     private: bool SetTargetCallback(actor_services::SetPose::Request&,
                  actor_services::SetPose::Response&);
     
+    private: void CallPublisher();
+
     /// \brief A ROS callbackqueue that helps process messages
     private: ros::CallbackQueue rosQueue;
 
