@@ -1,9 +1,8 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<sdf version="1.6">
-  <world name="default">
-    <light name="sun" type="directional">
+<sdf version='1.6'>
+  <world name='default'>
+    <light name='sun' type='directional'>
       <cast_shadows>1</cast_shadows>
-      <pose frame="">0 0 10 0 -0 0</pose>
+      <pose frame=''>0 0 10 0 -0 0</pose>
       <diffuse>0.8 0.8 0.8 1</diffuse>
       <specular>0.1 0.1 0.1 1</specular>
       <attenuation>
@@ -14,10 +13,10 @@
       </attenuation>
       <direction>-0.5 0.5 -1</direction>
     </light>
-    <model name="ground_plane">
+    <model name='ground_plane'>
       <static>1</static>
-      <link name="link">
-        <collision name="collision">
+      <link name='link'>
+        <collision name='collision'>
           <geometry>
             <plane>
               <normal>0 0 1</normal>
@@ -41,7 +40,7 @@
           </surface>
           <max_contacts>10</max_contacts>
         </collision>
-        <visual name="visual">
+        <visual name='visual'>
           <cast_shadows>0</cast_shadows>
           <geometry>
             <plane>
@@ -63,8 +62,8 @@
     </model>
     <gravity>0 0 -9.8</gravity>
     <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
-    <atmosphere type="adiabatic"/>
-    <physics name="default_physics" default="0" type="ode">
+    <atmosphere type='adiabatic'/>
+    <physics name='default_physics' default='0' type='ode'>
       <max_step_size>0.001</max_step_size>
       <real_time_factor>1</real_time_factor>
       <real_time_update_rate>1000</real_time_update_rate>
@@ -82,11 +81,11 @@
       <elevation>0</elevation>
       <heading_deg>0</heading_deg>
     </spherical_coordinates>
-    <model name="grey_wall">
+    <model name='grey_wall'>
       <static>1</static>
-      <link name="link">
-        <pose frame="">0 0 1.4 0 -0 0</pose>
-        <collision name="collision">
+      <link name='link'>
+        <pose frame=''>0 0 1.4 0 -0 0</pose>
+        <collision name='collision'>
           <geometry>
             <box>
               <size>7.5 0.2 2.8</size>
@@ -106,7 +105,7 @@
             </friction>
           </surface>
         </collision>
-        <visual name="visual">
+        <visual name='visual'>
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
@@ -125,13 +124,13 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose frame="">-3.75051 2.14574 0 0 -0 0</pose>
+      <pose frame=''>-3.68185 1.45798 0 0 -0 0</pose>
     </model>
-    <model name="grey_wall_0">
+    <model name='grey_wall_0'>
       <static>1</static>
-      <link name="link">
-        <pose frame="">0 0 1.4 0 -0 0</pose>
-        <collision name="collision">
+      <link name='link'>
+        <pose frame=''>0 0 1.4 0 -0 0</pose>
+        <collision name='collision'>
           <geometry>
             <box>
               <size>7.5 0.2 2.8</size>
@@ -151,7 +150,7 @@
             </friction>
           </surface>
         </collision>
-        <visual name="visual">
+        <visual name='visual'>
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
@@ -170,13 +169,13 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose frame="">3.73606 2.15697 0 0 -0 0</pose>
+      <pose frame=''>3.77444 1.48291 0 0 -0 0</pose>
     </model>
-    <model name="grey_wall_1">
+    <model name='grey_wall_1'>
       <static>1</static>
-      <link name="link">
-        <pose frame="">0 0 1.4 0 -0 0</pose>
-        <collision name="collision">
+      <link name='link'>
+        <pose frame=''>0 0 1.4 0 -0 0</pose>
+        <collision name='collision'>
           <geometry>
             <box>
               <size>7.5 0.2 2.8</size>
@@ -196,7 +195,7 @@
             </friction>
           </surface>
         </collision>
-        <visual name="visual">
+        <visual name='visual'>
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
@@ -215,13 +214,13 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose frame="">-3.81137 -2.10018 0 0 -0 0</pose>
+      <pose frame=''>-3.78748 -1.52587 0 0 -0 0</pose>
     </model>
-    <model name="grey_wall_2">
+    <model name='grey_wall_2'>
       <static>1</static>
-      <link name="link">
-        <pose frame="">0 0 1.4 0 -0 0</pose>
-        <collision name="collision">
+      <link name='link'>
+        <pose frame=''>0 0 1.4 0 -0 0</pose>
+        <collision name='collision'>
           <geometry>
             <box>
               <size>7.5 0.2 2.8</size>
@@ -241,7 +240,7 @@
             </friction>
           </surface>
         </collision>
-        <visual name="visual">
+        <visual name='visual'>
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
@@ -260,14 +259,14 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose frame="">3.68791 -2.09697 0 0 -0 0</pose>
+      <pose frame=''>3.66992 -1.51923 0 0 -0 0</pose>
     </model>
-    <gui fullscreen="0">
-      <camera name="user_camera">
-        <pose frame="">16.9455 -16.9666 8.51606 0 0.275643 2.35619</pose>
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose frame=''>16.2979 -13.4849 9.92677 0 0.275643 2.35619</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
     </gui>
-  <actor name="actor0"><pose>-4 0 1.02 0 0 0</pose><skin><filename>talk_b.dae</filename><scale>1</scale></skin><animation name="walking"><filename>walk.dae</filename><scale>1</scale><interpolate_x>true</interpolate_x></animation><plugin filename="/home/tyler/catkin_ws/src/gazebo_ros_pedestrians/actor_plugin/lib/libactorplugin_ros.so" name="None"><speed>1.34</speed><socialForce>2.7e-06</socialForce><desiredForce>2700.0</desiredForce><obstacleForce>0.0</obstacleForce><target>4 0 1.02</target><dodgingRight>false</dodgingRight><target_weight>1.5</target_weight><obstacle_weight>1.5</obstacle_weight><animation_factor>1.34</animation_factor><ignore_obstacles><model>caffe</model><model>ground_plane</model></ignore_obstacles></plugin></actor><actor name="actor1"><pose>4 0 1.02 0 0 0</pose><skin><filename>talk_a.dae</filename><scale>1</scale></skin><animation name="walking"><filename>walk.dae</filename><scale>1</scale><interpolate_x>true</interpolate_x></animation><plugin filename="/home/tyler/catkin_ws/src/gazebo_ros_pedestrians/actor_plugin/lib/libactorplugin_ros.so" name="None"><speed>1.34</speed><socialForce>2.7e-06</socialForce><desiredForce>2700.0</desiredForce><obstacleForce>0.0</obstacleForce><target>-4 0 1.02</target><dodgingRight>false</dodgingRight><target_weight>1.5</target_weight><obstacle_weight>1.5</obstacle_weight><animation_factor>1.34</animation_factor><ignore_obstacles><model>caffe</model><model>ground_plane</model></ignore_obstacles></plugin></actor></world>
+  </world>
 </sdf>

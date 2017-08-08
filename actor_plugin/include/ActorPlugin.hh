@@ -58,6 +58,16 @@ namespace gazebo
     /// to nearby obstacles.
     private: void HandleObstacles(ignition::math::Vector3d &_pos);
 
+    private: double socialForceFactor;
+    private: double desiredForceFactor;
+    private: double obstacleForceFactor;
+
+    /// Compute the social force.
+    private: ignition::math::Vector3d SocialForce(ignition::math::Pose3d &_pose, ignition::math::Vector3d _velocity) const;
+
+    /// Compute the obstacle force.
+    private: ignition::math::Vector3d ObstacleForce(ignition::math::Pose3d &_pose) const;
+
     /// \brief Pointer to the parent actor.
     private: physics::ActorPtr actor;
 
@@ -66,6 +76,12 @@ namespace gazebo
 
     /// \brief Velocity of the actor
     private: ignition::math::Vector3d velocity;
+
+    /// \brief Max velocity of the actor
+    private: double vMax;
+
+    /// \brief The direction the actor will dodge in, will dodge right if true or by default
+    private: bool dodgingRight;
 
     /// \brief List of connections
     private: std::vector<event::ConnectionPtr> connections;

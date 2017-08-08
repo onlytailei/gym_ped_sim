@@ -33,15 +33,32 @@ skin_list = ["moonwalk.dae",
         "talk_b.dae",
         "walk.dae"]
 
+distance = 8
+
+startingPosition = dict()
+targetPosition = dict()
+dodgingDirection = dict()
+speedOfActor = dict()
+
+startingPosition[0] = (0, -distance/2)
+targetPosition[0] = (0, distance/2)
+speedOfActor[0] = 1.34
+dodgingDirection[0] = "left"
+
+startingPosition[1] = (distance/2, 0)
+targetPosition[1] = (-distance/2, 0)
+speedOfActor[1] = 1.34
+dodgingDirection[1] = "left"
+
 
 actor_list = []
-for item in range(10):
+for item in range(2):
     actor = Element("actor", name="actor"+str(item))
 
     pose = Element("pose")
     #randomly generate position to pose text
-    x = str((np.random.rand()-0.5)*12)
-    y = str((np.random.rand()-0.5)*12)
+    x = str(startingPosition[item][0])
+    y = str(startingPosition[item][1])
     pose.text = x+" "+y+" "+"1.02 0 0 0"
     actor.append(pose)
 
@@ -68,19 +85,19 @@ for item in range(10):
 
     plugin = Element("plugin", name="None", filename=plugin_path)
     speed = Element("speed")
-    speed.text = str(np.random.normal(1.34, 0.26, 1)[0])
+    speed.text = str(speedOfActor[item])
     dodgingRight = Element("dodgingRight")
-    dodgingRight.text = str(np.random.rand() < 0.5).lower()
+    dodgingRight.text = str(dodgingDirection[item] == "right").lower()
     target = Element("target")
-    x = str((np.random.rand()-0.5)*12)
-    y = str((np.random.rand()-0.5)*12)
+    x = str(targetPosition[item][0])
+    y = str(targetPosition[item][1])
     target.text =  x+" "+y+" "+"1.02"
     target_weight = Element("target_weight")
     target_weight.text = "1.5"
     obstacle_weight = Element("obstacle_weight")
     obstacle_weight.text = "1.5"
     animation_factor = Element("animation_factor")
-    speed_ = str((np.random.rand()*3)+5)
+    speed_ = str(speedOfActor[item])
     animation_factor.text = speed_
     ignore_obstacle = Element("ignore_obstacles")
     model_cafe = Element("model")
@@ -90,8 +107,8 @@ for item in range(10):
     ignore_obstacle.append(model_cafe)
     ignore_obstacle.append(model_ground_plane)
     plugin.append(speed)
-    plugin.append(dodgingRight)
     plugin.append(target)
+    plugin.append(dodgingRight)
     plugin.append(target_weight)
     plugin.append(obstacle_weight)
     plugin.append(animation_factor)
