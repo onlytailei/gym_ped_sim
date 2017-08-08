@@ -2,4 +2,4 @@
 !actorplugin/lib/
 actor_plugin/lib/*
 actor_plugin/build/*
-
+actor_services/worlds/ped_world.world
