@@ -20,7 +20,7 @@
 #include <gazebo/physics/physics.hh>
 #include <gazebo/math/gzmath.hh>
 #include "ActorPlugin.hh"
-
+#include <ros/console.h>
 #include <iostream>
 #include <string>
 
@@ -305,6 +305,7 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
       force += forceVelocity.Ign() + forceAngle.Ign();
     }
+    ROS_ERROR("======force: %lf======", force.X());
     return force;
 }
 
