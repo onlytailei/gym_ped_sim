@@ -25,6 +25,7 @@
 #include "ActorPlugin.hh"
 #include <iostream>
 #include <string>
+#include <ros/console.h> //roslogging
 
 
 using namespace gazebo;
@@ -242,10 +243,11 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
     // TODO: set to a good range.
     double neighborRange = 20.0;
 
+    ROS_ERROR("======model count: %d======",this->world->ModelCount());
     // Iterate over all neighbors in range of influence.
     for(unsigned int i = 0; i < this->world->ModelCount(); i++) {
       physics::ModelPtr currentAgent = this->world->ModelByIndex(i);
-
+      
       // Check if other actor, don't calculate social force to objects
       if (!currentAgent->HasType(physics::Base::EntityType::ACTOR)) {
         continue;
