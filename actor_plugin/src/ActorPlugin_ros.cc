@@ -283,12 +283,8 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
       double theta = otherAngle - thisAngle;
 
-
-
-
       // Get sign of theta.
       int thetaSign = (theta == 0) ? (0) : (theta / std::abs(theta));
-
 
       // compute model parameter B = gamma * ||D||
       double B = gamma * interactionLength;
