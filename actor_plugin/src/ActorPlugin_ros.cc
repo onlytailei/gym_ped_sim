@@ -310,7 +310,7 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
       force += forceVelocity + forceAngle;
     }
-    ROS_ERROR("======force: %lf======", force.X());
+    //ROS_ERROR("======force: %lf======", force.X());
     return force;
 }
 

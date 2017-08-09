@@ -58,13 +58,13 @@ speedOfActor = dict()
 
 startingPosition[0] = (-distance/2, 0)
 targetPosition[0] = (distance/2, 0)
-speedOfActor[0] = 1.34
-dodgingDirection[0] = "left"
+speedOfActor[0] = 1.00
+dodgingDirection[0] = "right"
 
 startingPosition[1] = (distance/2, 0)
 targetPosition[1] = (-distance/2, 0)
-speedOfActor[1] = 1.34
-dodgingDirection[1] = "left"
+speedOfActor[1] = 1.00
+dodgingDirection[1] = "right"
 
 
 actor_list = []
@@ -89,7 +89,10 @@ for item in range(2):
 
     animation = Element("animation", name="walking")
     animate_fn = Element("filename")
-    animate_fn.text = "walk.dae"
+    if item==0:
+    	animate_fn.text = "stand.dae"
+    else:
+    	animate_fn.text = "walk.dae"
     interpolate_x = Element("interpolate_x")
     interpolate_x.text = "true"
     animate_scale = Element("scale")
@@ -119,7 +122,10 @@ for item in range(2):
     obstacle_weight = Element("obstacle_weight")
     obstacle_weight.text = "1.5"
     animation_factor = Element("animation_factor")
-    speed_ = str(AnimationFactor)
+    if item==0:
+	speed_ = "0"
+    else:
+	speed_ = str(AnimationFactor)
     animation_factor.text = speed_
     ignore_obstacle = Element("ignore_obstacles")
     model_cafe = Element("model")
