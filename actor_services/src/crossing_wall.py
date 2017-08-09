@@ -21,12 +21,14 @@ with open("/home/tyler/catkin_ws/src/gazebo_ros_pedestrians/actor_services/src/f
     except yaml.YAMLError as exc:
         print(exc)
 
-SocialForce = factorData[0]["SocialForceFactor"]
-DesiredForce = factorData[1]["DesiredForceFactor"]
-ObstacleForce = factorData[2]["ObstacleForceFactor"]
+SocialForce = factorData["SocialForceFactor"]
+DesiredForce = factorData["DesiredForceFactor"]
+ObstacleForce = factorData["ObstacleForceFactor"]
+AnimationFactor = factorData["AnimationFactor"]
 print(SocialForce)
 print(DesiredForce)
 print(ObstacleForce)
+print(AnimationFactor)
 
 #rospy.init_node('creat_world', anonymous=True)
 rospack = rospkg.RosPack()
@@ -118,7 +120,7 @@ for item in range(2):
     obstacle_weight.text = "1.5"
     animation_factor = Element("animation_factor")
     # TODO set to 5 or some value dependent on velocity
-    speed_ = str(speedOfActor[item])
+    speed_ = str(AnimationFactor)
     animation_factor.text = speed_
     ignore_obstacle = Element("ignore_obstacles")
     model_cafe = Element("model")

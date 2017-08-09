@@ -4,13 +4,13 @@
     <node name="create_world" pkg="actor_services" type="passing_wall.py"/>
     
     <arg name="world_file"  default="$(find actor_services)/worlds/ped_world.world"/>
-    <arg name="gui" default="true"/>
+    <arg name="gui" default="False"/>
 
     
     <node name="gazebo" pkg="gazebo_ros" type="gzserver" output="screen"
         args="$(arg world_file)" />
 
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find actor_services)/rviz/tf_show.rviz"/>
+    <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(find actor_services)/rviz/tf_show.rviz"/>-->
 
 	<!-- start gazebo client -->
     <group if="$(arg gui)">

@@ -19,10 +19,14 @@
 #include <ignition/math.hh>
 #include <gazebo/physics/physics.hh>
 #include <gazebo/math/gzmath.hh>
+#include <std_msgs/Float32MultiArray.h>
+#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Pose.h>
 #include "ActorPlugin.hh"
 #include <ros/console.h>
 #include <iostream>
 #include <string>
+#include <ros/console.h> //roslogging
 
 
 using namespace gazebo;
@@ -144,18 +148,22 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   // Create our ROS node. This acts in a similar manner to
   // the Gazebo node
   this->rosNode.reset(new ros::NodeHandle("gazebo_client"));
-  
+
   // Register the callbackqueue to the node
   this->rosNode->setCallbackQueue(&this->rosQueue);
-  
-  // Create the set position service  
+
+  // Create the set position service
   this->SetPoseService = this->rosNode->advertiseService("/"+this->actor->GetName()+"/SetActorPosition",
       &ActorPlugin::SetPoseCallback, this);
-  
-  // Create the set target position service  
+
+  // Create the set target position service
   this->SetTargetService = this->rosNode->advertiseService("/"+this->actor->GetName()+"/SetActorTarget",
       &ActorPlugin::SetTargetCallback, this);
-  
+
+  // Broadcast the model velocity and position topic
+  this->VelPublisher = this->rosNode->advertise<geometry_msgs::Pose>("/"+this->actor->GetName()+"/actor_vel",1);
+  this->PosePublisher = this->rosNode->advertise<geometry_msgs::Twist>("/"+this->actor->GetName()+"/actor_pose",1);
+
   // Spin up the queue helper thread.
   this->rosQueueThread =
     std::thread(std::bind(&ActorPlugin::QueueThread, this));
@@ -191,15 +199,15 @@ ignition::math::Vector3d ActorPlugin::ObstacleForce(ignition::math::Pose3d &_pos
   ignition::math::Vector3d minDiff;
   double minDistanceSquared = INFINITY;
 
-  for(unsigned int i = 0; i < this->world->GetModelCount(); i++) {
-    physics::ModelPtr currentObstacle = this->world->GetModel(i);
+  for(unsigned int i = 0; i < this->world->ModelCount(); i++) {
+    physics::ModelPtr currentObstacle = this->world->ModelByIndex(i);
 
     // Calculate for everything that is not an actor
     if (currentObstacle->HasType(physics::Base::EntityType::ACTOR)) {
       continue;
     }
 
-    double distance = (currentObstacle->GetWorldPose().pos).Distance(_pose.Pos());
+    double distance = currentObstacle->WorldPose().Pos().Distance(_pose.Pos());
     double distanceSquared = distance * distance;
     if (distanceSquared < minDistanceSquared) {
       minDistanceSquared = distanceSquared;
@@ -237,9 +245,9 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
     double neighborRange = 20.0;
 
     // Iterate over all neighbors in range of influence.
-    for(unsigned int i = 0; i < this->world->GetModelCount(); i++) {
-      physics::ModelPtr currentAgent = this->world->GetModel(i);
-
+    for(unsigned int i = 0; i < this->world->ModelCount(); i++) {
+      physics::ModelPtr currentAgent = this->world->ModelByIndex(i);
+      
       // Check if other actor, don't calculate social force to objects
       if (!currentAgent->HasType(physics::Base::EntityType::ACTOR)) {
         continue;
@@ -247,61 +255,60 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
       // Do not calculate social force to self.
       if (currentAgent == this->actor) {
-        continue; 
+        continue;
       }
 
       // Only compute for other agents in neighborhood range.
-      double distance = (currentAgent->GetWorldPose().pos).Distance(_pose.Pos());
+      double distance = currentAgent->WorldPose().Pos().Distance(_pose.Pos());
       if (distance > neighborRange)
       {
         continue;
       }
 
       // Calculate difference between both agents' positions
-      gazebo::math::Vector3 diff = currentAgent->GetWorldPose().pos - _pose.Pos();
-      gazebo::math::Vector3 diffDirection = diff.Normalize();
+      ignition::math::Vector3d diff = currentAgent->WorldPose().Pos() - _pose.Pos();
+      ignition::math::Vector3d diffDirection = diff.Normalize();
 
       // compute difference between both agents' velocity vectors
-      gazebo::math::Vector3 velDeff = _velocity - currentAgent->GetRelativeLinearVel().Ign();
+      ignition::math::Vector3d velDeff = _velocity - currentAgent->RelativeLinearVel();
 
       // compute interaction direction t_ij
-      gazebo::math::Vector3 interactionVector = lambdaImportance * velDeff + diffDirection;
-      double interactionLength = interactionVector.GetLength();
-      gazebo::math::Vector3 interactionDirection = interactionVector / interactionLength;
+      ignition::math::Vector3d interactionVector = lambdaImportance * velDeff + diffDirection;
+      double interactionLength = interactionVector.Length();
+      ignition::math::Vector3d interactionDirection = interactionVector / interactionLength;
 
       // compute angle theta (between interaction and position difference vector)
-      double thisAngle = atan2(interactionDirection.y, interactionDirection.x);
+      double thisAngle = atan2(interactionDirection.Y(), interactionDirection.X());
       // thisAngle.Normalize();
-      double otherAngle = atan2(diffDirection.y, diffDirection.x);
+      double otherAngle = atan2(diffDirection.Y(), diffDirection.X());
       // otherAngle.Normalize();
 
       double theta = otherAngle - thisAngle;
 
-
       // Get sign of theta.
-      int thetaSign = (theta == 0) ? (0) : (theta / std::abs(theta));
-      ROS_ERROR("thetaSign: %d, abs theta: %d", thetaSign, abs(theta));
-
+      int thetaSign = (theta == 0) ? (0) : (theta / abs(theta));
+      //ROS_ERROR("abs theta: %d, thetaSign: %d", abs(theta),thetaSign);
+      //ROS_ERROR("std abs theta: %lf, thetaSign: %d", std::abs(theta),thetaSign);
       // compute model parameter B = gamma * ||D||
       double B = gamma * interactionLength;
 
-      double forceVelocityAmount = -exp(-diff.GetLength()/B - (n_prime * B * theta) * (n_prime * B * theta));
-      double forceAngleAmount = -thetaSign * exp(-diff.GetLength() / B - (n * B * theta) * (n * B * theta));
+      double forceVelocityAmount = -exp(-diff.Length()/B - (n_prime * B * theta) * (n_prime * B * theta));
+      double forceAngleAmount = -thetaSign * exp(-diff.Length() / B - (n * B * theta) * (n * B * theta));
 
-      gazebo::math::Vector3 forceVelocity = forceVelocityAmount * interactionDirection;
+      ignition::math::Vector3d forceVelocity = forceVelocityAmount * interactionDirection;
 
       // Dodge to the direction preset
-      gazebo::math::Vector3 interactionDirectionNormal;
+      ignition::math::Vector3d interactionDirectionNormal;
       if (this->dodgingRight) {
-        interactionDirectionNormal = gazebo::math::Vector3(-interactionDirection.y, interactionDirection.x, interactionDirection.z);
+        interactionDirectionNormal = ignition::math::Vector3d(-interactionDirection.Y(), interactionDirection.X(), interactionDirection.Z());
       }
       else {
-        interactionDirectionNormal = gazebo::math::Vector3(interactionDirection.y, -interactionDirection.x, interactionDirection.z);
+        interactionDirectionNormal = ignition::math::Vector3d(interactionDirection.Y(), -interactionDirection.X(), interactionDirection.Z());
       }
 
-      gazebo::math::Vector3 forceAngle = forceAngleAmount * interactionDirectionNormal;
+      ignition::math::Vector3d forceAngle = forceAngleAmount * interactionDirectionNormal;
 
-      force += forceVelocity.Ign() + forceAngle.Ign();
+      force += forceVelocity + forceAngle;
     }
     ROS_ERROR("======force: %lf======", force.X());
     return force;
@@ -373,7 +380,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   tf_transform.setRotation(tf_q);
   br.sendTransform(tf::StampedTransform(tf_transform, ros::Time::now(), "default_world", this->actor->GetName()));
   ros::spinOnce();
-  
+
 
   // Choose a new target position if the actor has reached its current
   // target. It will go back to the start position defaultly.
@@ -382,7 +389,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 
   if (distance < 0.3)
   {
-    ignition::math::Vector3d temp = this->start_location; 
+    ignition::math::Vector3d temp = this->start_location;
     this->start_location = this->target;
     this->target = temp;
     pos = this->target - pose.Pos();
@@ -410,15 +417,15 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
     pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
   }
   */
-  
+
 
   pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
-  
+
   // Make sure the actor stays within bounds
   pose.Pos().X(std::max(-10.0, std::min(10.0, pose.Pos().X())));
   pose.Pos().Y(std::max(-10.0, std::min(10.0, pose.Pos().Y())));
   pose.Pos().Z(1.02);
-  
+
   // Distance traveled is used to coordinate motion with the walking
   // animation
 
@@ -472,3 +479,8 @@ void ActorPlugin::QueueThread()
   }
 }
 
+void ActorPlugin::CallPublisher()
+{
+  ignition::math::Vector3d vel_ = this->actor->RelativeLinearVel();
+  ignition::math::Vector3d pose_  = this->actor->WorldPose().Pos();
+}
