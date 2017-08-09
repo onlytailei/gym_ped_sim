@@ -285,9 +285,9 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       double theta = otherAngle - thisAngle;
 
       // Get sign of theta.
-      int thetaSign = (theta == 0) ? (0) : (theta / std::abs(theta));
-      ROS_ERROR("abs theta: %d, thetaSign: %d", abs(theta),thetaSign);
-      ROS_ERROR("std abs theta: %lf, thetaSign: %d", std::abs(theta),thetaSign);
+      int thetaSign = (theta == 0) ? (0) : (theta / abs(theta));
+      //ROS_ERROR("abs theta: %d, thetaSign: %d", abs(theta),thetaSign);
+      //ROS_ERROR("std abs theta: %lf, thetaSign: %d", std::abs(theta),thetaSign);
       // compute model parameter B = gamma * ||D||
       double B = gamma * interactionLength;
 
@@ -309,7 +309,7 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
       force += forceVelocity + forceAngle;
     }
-    ROS_ERROR("======force: %f======",force.X());
+    //ROS_ERROR("======force: %f======",force.X());
     return force;
 }
 

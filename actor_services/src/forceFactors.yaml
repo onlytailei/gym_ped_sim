@@ -1,7 +1,7 @@
-#SocialForceFactor: 0.0000027
-SocialForceFactor: 2000
-#DesiredForceFactor: 2700.0
-DesiredForceFactor: 100.0
+SocialForceFactor: 0.0000027
+#SocialForceFactor: 2000
+DesiredForceFactor: 2700.0
+#DesiredForceFactor: 100.0
 ObstacleForceFactor: 0.0
 AnimationFactor: 5
 
