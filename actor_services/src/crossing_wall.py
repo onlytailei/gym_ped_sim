@@ -15,7 +15,8 @@ from lxml.etree import Element
 from copy import deepcopy
 import yaml
 
-with open("/home/tyler/catkin_ws/src/gazebo_ros_pedestrians/actor_services/src/forceFactors.yaml", 'r') as stream:
+rospack = rospkg.RosPack()
+with open(rospack.get_path("actor_services")+"/src/forceFactors.yaml", 'r') as stream:
     try:
         factorData = yaml.load(stream)
     except yaml.YAMLError as exc:
@@ -31,7 +32,6 @@ print(ObstacleForce)
 print(AnimationFactor)
 
 #rospy.init_node('creat_world', anonymous=True)
-rospack = rospkg.RosPack()
 plugin_pkg_path = rospack.get_path("actor_plugin")
 plugin_path = plugin_pkg_path + "/lib/libactorplugin_ros.so"
 actor_pkg_path = rospack.get_path("actor_services")
