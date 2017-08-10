@@ -287,7 +287,9 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
       // Get sign of theta.
       int thetaSign = (theta == 0) ? (0) : (theta / abs(theta));
-      //ROS_ERROR("abs theta: %d, thetaSign: %d", abs(theta),thetaSign);
+      if (this->actor->GetName()=="actor0"){
+      	ROS_ERROR("%s, theta: %lf, abs theta: %d, thetaSign: %d", this->actor->GetName().c_str(), theta, abs(theta), thetaSign);
+      }
       //ROS_ERROR("std abs theta: %lf, thetaSign: %d", std::abs(theta),thetaSign);
       // compute model parameter B = gamma * ||D||
       double B = gamma * interactionLength;
@@ -359,15 +361,20 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 
   ignition::math::Vector3d obstacleForce = ObstacleForce(pose);
 
+  ignition::math::Vector3d socialForce_ = SocialForce(pose, this->velocity);
+  if (this->actor->GetName()=="actor0"){
+    ROS_ERROR("%s, Social Force: %lf, %lf, %lf", this->actor->GetName().c_str(), socialForce_.X(), socialForce_.Y(), socialForce_.Z());
+    ROS_ERROR("%s, Desired Force: %lf, %lf, %lf", this->actor->GetName().c_str(), desiredForce.X(), desiredForce.Y(), desiredForce.Z());
+    ROS_ERROR("%s, Actor Pose: %lf, %lf, %lf", this->actor->GetName().c_str(), pose.Pos().X(), pose.Pos().Y(), pose.Pos().Z());
+  }
   // Sum of all forces
-  ignition::math::Vector3d a = ((this->socialForceFactor * SocialForce(pose, this->velocity)) + (this->desiredForceFactor * desiredForce)) + (this->obstacleForceFactor*obstacleForce);
+  ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce) + (this->obstacleForceFactor*obstacleForce);
 
   // Calculate new velocity
   this->velocity = 0.5 * this->velocity + a * dt;
 
   // Don't exceed max speed
   double speed = this->velocity.Length();
-  ROS_ERROR("speed: %lf, max speed: %lf", speed, this->vMax);
   if (speed > this->vMax) {
     this->velocity = this->velocity.Normalize() * this->vMax;
   }
