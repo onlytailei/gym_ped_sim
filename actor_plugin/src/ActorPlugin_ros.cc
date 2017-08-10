@@ -288,7 +288,7 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       theta = std::atan(std::tan(theta));
 
       // Get sign of theta.
-      int thetaSign = (theta == 0) ? (0) : (theta / abs(theta));
+      int thetaSign = (theta == 0) ? (0) : (theta / std::abs(theta));
       if (this->actor->GetName()=="actor0"){
       	ROS_ERROR("%s, theta: %lf, abs theta: %d, thetaSign: %d", this->actor->GetName().c_str(), theta, abs(theta), thetaSign);
       }
