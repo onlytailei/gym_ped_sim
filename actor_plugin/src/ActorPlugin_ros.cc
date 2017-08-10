@@ -22,13 +22,14 @@
 #include <std_msgs/Float32MultiArray.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose.h>
+#include <cassert>
 #include "ActorPlugin.hh"
 #include <ros/console.h>
 #include <iostream>
 #include <string>
 #include <ros/console.h> //roslogging
 
-#define PI 3.141592653
+#define PI 3.14159265359
 using namespace gazebo;
 GZ_REGISTER_MODEL_PLUGIN(ActorPlugin)
 
@@ -285,19 +286,21 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
       double theta = otherAngle - thisAngle;
      
-      theta = std::atan(std::tan(theta));
+      theta = (theta>PI)?(theta-2*PI):((theta<-1*PI)?(theta+2*PI):theta);
+      assert(theta<=PI);
+      assert(theta>-1*PI);
 
       // Get sign of theta.
       int thetaSign = (theta == 0) ? (0) : (theta / std::abs(theta));
       if (this->actor->GetName()=="actor0"){
-      	ROS_ERROR("%s, theta: %lf, abs theta: %d, thetaSign: %d", this->actor->GetName().c_str(), theta, abs(theta), thetaSign);
+      	ROS_ERROR("%s, theta: %lf, abs theta: %d, thetaSign: %d", this->actor->GetName().c_str(), theta, std::abs(theta), thetaSign);
       }
       //ROS_ERROR("std abs theta: %lf, thetaSign: %d", std::abs(theta),thetaSign);
       // compute model parameter B = gamma * ||D||
       double B = gamma * interactionLength;
 
-      double forceVelocityAmount = -exp(-diff.Length()/B - (n_prime * B * theta) * (n_prime * B * theta));
-      double forceAngleAmount = -thetaSign * exp(-diff.Length() / B - (n * B * theta) * (n * B * theta));
+      double forceVelocityAmount = -std::exp(-diff.Length()/B - (n_prime * B * theta) * (n_prime * B * theta));
+      double forceAngleAmount = -thetaSign * std::exp(-diff.Length() / B - (n * B * theta) * (n * B * theta));
 
       ignition::math::Vector3d forceVelocity = forceVelocityAmount * interactionDirection;
 
