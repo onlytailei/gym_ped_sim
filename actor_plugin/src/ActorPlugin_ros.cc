@@ -28,7 +28,7 @@
 #include <string>
 #include <ros/console.h> //roslogging
 
-
+#define PI 3.141592653
 using namespace gazebo;
 GZ_REGISTER_MODEL_PLUGIN(ActorPlugin)
 
@@ -284,6 +284,8 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       // otherAngle.Normalize();
 
       double theta = otherAngle - thisAngle;
+     
+      theta = std::atan(std::tan(theta));
 
       // Get sign of theta.
       int thetaSign = (theta == 0) ? (0) : (theta / abs(theta));
