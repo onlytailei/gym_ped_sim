@@ -272,10 +272,15 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       ignition::math::Vector3d diffDirection = diff.Normalize();
 
       // compute difference between both agents' velocity vectors
-      ignition::math::Vector3d velDeff = _velocity - currentAgent->RelativeLinearVel();
-
+      ignition::math::Vector3d velDiff = _velocity - currentAgent->GetWorldLinearVel().Ign();
+      ignition::math::Vector3d relativevel = currentAgent->GetWorldLinearVel().Ign();
+      ignition::math::Vector3d thisvel = this->actor->GetWorldLinearVel().Ign();
+      ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y(), _velocity.Z());
+      ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", currentAgent->GetName().c_str(), relativevel.X(), relativevel.Y(), relativevel.Z());
+      ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), thisvel.X(), thisvel.Y(), thisvel.Z());
+      
       // compute interaction direction t_ij
-      ignition::math::Vector3d interactionVector = lambdaImportance * velDeff + diffDirection;
+      ignition::math::Vector3d interactionVector = lambdaImportance * velDiff + diffDirection;
       double interactionLength = interactionVector.Length();
       ignition::math::Vector3d interactionDirection = interactionVector / interactionLength;
 
@@ -308,9 +313,11 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       // Dodge to the direction preset
       ignition::math::Vector3d interactionDirectionNormal;
       if (this->dodgingRight) {
+        //ROS_ERROR("%s, right", this->actor->GetName().c_str());
         interactionDirectionNormal = ignition::math::Vector3d(-interactionDirection.Y(), interactionDirection.X(), interactionDirection.Z());
       }
       else {
+        //ROS_ERROR("%s, left", this->actor->GetName().c_str());
         interactionDirectionNormal = ignition::math::Vector3d(interactionDirection.Y(), -interactionDirection.X(), interactionDirection.Z());
       }
 
@@ -368,11 +375,11 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   ignition::math::Vector3d obstacleForce = ObstacleForce(pose);
 
   ignition::math::Vector3d socialForce_ = SocialForce(pose, this->velocity);
-  if (this->actor->GetName()=="actor0"){
-    ROS_ERROR("%s, Social Force: %lf, %lf, %lf", this->actor->GetName().c_str(), socialForce_.X(), socialForce_.Y(), socialForce_.Z());
-    ROS_ERROR("%s, Desired Force: %lf, %lf, %lf", this->actor->GetName().c_str(), desiredForce.X(), desiredForce.Y(), desiredForce.Z());
-    ROS_ERROR("%s, Actor Pose: %lf, %lf, %lf", this->actor->GetName().c_str(), pose.Pos().X(), pose.Pos().Y(), pose.Pos().Z());
-  }
+  //if (this->actor->GetName()=="actor0"){
+  //  ROS_ERROR("%s, Social Force: %lf, %lf, %lf", this->actor->GetName().c_str(), socialForce_.X(), socialForce_.Y(), socialForce_.Z());
+  //  ROS_ERROR("%s, Desired Force: %lf, %lf, %lf", this->actor->GetName().c_str(), desiredForce.X(), desiredForce.Y(), desiredForce.Z());
+  //  ROS_ERROR("%s, Actor Pose: %lf, %lf, %lf", this->actor->GetName().c_str(), pose.Pos().X(), pose.Pos().Y(), pose.Pos().Z());
+  //}
   // Sum of all forces
   ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce) + (this->obstacleForceFactor*obstacleForce);
 
