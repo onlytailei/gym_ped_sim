@@ -367,6 +367,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 
   // Don't exceed max speed
   double speed = this->velocity.Length();
+  ROS_ERROR("speed: %lf, max speed: %lf", speed, this->vMax);
   if (speed > this->vMax) {
     this->velocity = this->velocity.Normalize() * this->vMax;
   }
