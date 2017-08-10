@@ -23,6 +23,7 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose.h>
 #include <cassert>
+#include <cmath>
 #include "ActorPlugin.hh"
 #include <ros/console.h>
 #include <iostream>
@@ -286,15 +287,15 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
       double theta = otherAngle - thisAngle;
      
-      theta = (theta>PI)?(theta-2*PI):((theta<-1*PI)?(theta+2*PI):theta);
+      theta = (theta>PI)?(theta-2*PI):((theta<-PI)?(theta+2*PI):theta);
       assert(theta<=PI);
-      assert(theta>-1*PI);
+      assert(theta>=-PI);
 
       // Get sign of theta.
-      int thetaSign = (theta == 0) ? (0) : (theta / std::abs(theta));
-      if (this->actor->GetName()=="actor0"){
-      	ROS_ERROR("%s, theta: %lf, abs theta: %d, thetaSign: %d", this->actor->GetName().c_str(), theta, std::abs(theta), thetaSign);
-      }
+      double thetaSign = (theta == 0.0) ? (0.0) : (theta / std::fabs(theta));
+      //if (this->actor->GetName()=="actor0"){
+      //	ROS_ERROR("%s, theta: %lf, abs theta: %lf, thetaSign: %lf", this->actor->GetName().c_str(), theta, std::fabs(theta), thetaSign);
+      //}
       //ROS_ERROR("std abs theta: %lf, thetaSign: %d", std::abs(theta),thetaSign);
       // compute model parameter B = gamma * ||D||
       double B = gamma * interactionLength;
