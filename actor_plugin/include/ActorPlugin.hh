@@ -22,6 +22,7 @@
 #include <vector>
 #include <thread>
 #include <actor_services/SetPose.h>
+#include <actor_services/GetVel.h>
 #include "ros/ros.h"
 #include "ros/callback_queue.h"
 #include "ros/subscribe_options.h"
@@ -48,6 +49,19 @@ namespace gazebo
     /// \brief Function that is called every update cycle.
     /// \param[in] _info Timing information
     private: void OnUpdate(const common::UpdateInfo &_info);
+    
+    /// \brief A node use for ROS transport
+    private: std::unique_ptr<ros::NodeHandle> rosNode;
+
+    private: ros::ServiceServer SetPoseService;
+    
+    private: ros::ServiceServer SetTargetService;
+    
+    private: ros::ServiceServer GetVelService;
+    
+    private: ros::ServiceClient GetVelClient;
+    
+    private: ignition::math::Vector3d CallActorVelClinet(std::string);
 
     /// \brief Helper function to choose a new target location
     private: void ChooseNewTarget();
@@ -76,6 +90,9 @@ namespace gazebo
 
     /// \brief Velocity of the actor
     private: ignition::math::Vector3d velocity;
+    
+    /// \brief Angular Velocity of the yaw axis
+    private: double yaw_vel;
 
     /// \brief Max velocity of the actor
     private: double vMax;
@@ -111,13 +128,7 @@ namespace gazebo
     /// \brief Custom trajectory info.
     private: physics::TrajectoryInfoPtr trajectoryInfo;
 
-    /// \brief A node use for ROS transport
-    private: std::unique_ptr<ros::NodeHandle> rosNode;
 
-    private: ros::ServiceServer SetPoseService;
-    
-    private: ros::ServiceServer SetTargetService;
-    
     //private: ros::Publisher PosePublisher;
     private: ros::Publisher VelPublisher;
     private: bool SetPoseCallback(actor_services::SetPose::Request&,
@@ -125,6 +136,9 @@ namespace gazebo
 
     private: bool SetTargetCallback(actor_services::SetPose::Request&,
                  actor_services::SetPose::Response&);
+    
+    private: bool GetVelCallback(actor_services::GetVel::Request&,
+                 actor_services::GetVel::Response&);
     
     private: void CallPublisher(ignition::math::Vector3d, double);
 

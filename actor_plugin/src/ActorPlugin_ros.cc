@@ -162,6 +162,9 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->SetTargetService = this->rosNode->advertiseService("/"+this->actor->GetName()+"/SetActorTarget",
       &ActorPlugin::SetTargetCallback, this);
 
+  this->GetVelService = this->rosNode->advertiseService("/"+this->actor->GetName()+"/GetActorVelocity",
+      &ActorPlugin::GetVelCallback, this);
+  
   // Broadcast the model velocity and position topic
   this->VelPublisher = this->rosNode->advertise<geometry_msgs::Pose>("/"+this->actor->GetName()+"/actor_vel",1);
   //this->PosePublisher = this->rosNode->advertise<geometry_msgs::Twist>("/"+this->actor->GetName()+"/actor_pose",1);
@@ -195,6 +198,14 @@ void ActorPlugin::ChooseNewTarget()
   this->target = newTarget;
 }
 
+ignition::math::Vector3d ActorPlugin::CallActorVelClient(std::string actor_name_){
+  GetVelClient = this->rosNode->serviceClient<actor_services::GetVel>("/"+actor_name_+"/GetActorVelocity");
+  actor_services::GetVel getvel_srv;
+  getvel_srv.request.set_flag = false;
+  GetVelClient.call(getvel_srv);
+  GetVelClient.shutdown()
+  return ignition::math::Vector3d(getvel_srv.response.x, getvel_srv.response.y, 0);
+}
 
 ignition::math::Vector3d ActorPlugin::ObstacleForce(ignition::math::Pose3d &_pose) const
 {
@@ -270,14 +281,12 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       // Calculate difference between both agents' positions
       ignition::math::Vector3d diff = currentAgent->WorldPose().Pos() - _pose.Pos();
       ignition::math::Vector3d diffDirection = diff.Normalize();
-
+     
+        
       // compute difference between both agents' velocity vectors
-      ignition::math::Vector3d velDiff = _velocity - currentAgent->GetWorldLinearVel().Ign();
-      //ignition::math::Vector3d relativevel = currentAgent->GetWorldLinearVel().Ign();
-      //ignition::math::Vector3d thisvel = this->actor->GetWorldLinearVel().Ign();
+      //ignition::math::Vector3d velDiff = _velocity - currentAgent->GetWorldLinearVel().Ign();
+      ignition::math::Vector3d velDiff = _velocity - CallActorVelClient(currentAgent->GetName().c_str());
       //ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y(), _velocity.Z());
-      //ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", currentAgent->GetName().c_str(), relativevel.X(), relativevel.Y(), relativevel.Z());
-      //ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), thisvel.X(), thisvel.Y(), thisvel.Z());
       
       // compute interaction direction t_ij
       ignition::math::Vector3d interactionVector = lambdaImportance * velDiff + diffDirection;
@@ -450,7 +459,8 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   double distanceTraveled = (pose.Pos() -
       this->actor->WorldPose().Pos()).Length();
   //publish the speed
-  CallPublisher(this->velocity, yaw.Radian()/dt); 
+  yaw_vel = yaw.Radian()/dt;
+  CallPublisher(this->velocity, yaw_vel); 
 
   this->actor->SetWorldPose(pose, false, false);
   this->actor->SetScriptTime(this->actor->ScriptTime() +
@@ -468,6 +478,20 @@ bool ActorPlugin::SetTargetCallback(actor_services::SetPose::Request& req, actor
     newTarget.X(req.new_x);
     newTarget.Y(req.new_y);
     this->target = newTarget;
+  }
+  return true;
+}
+
+
+bool ActorPlugin::GetVelCallback(actor_services::GetVel::Request& req, actor_services::GetVel::Response& res){
+  res.x = this->velocity.X();
+  res.y = this->velocity.Y();
+  res.yaw = this->yaw_vel;
+  if (req.set_flag == true)
+  {
+    this->velocity.X(req.new_x);
+    this->velocity.Y(req.new_y);
+    this->yaw_vel = req.new_yaw;
   }
   return true;
 }
@@ -499,13 +523,14 @@ void ActorPlugin::QueueThread()
   }
 }
 
-void ActorPlugin::CallPublisher(ignition::math::Vector3d vel_, double yaw_vel)
+void ActorPlugin::CallPublisher(ignition::math::Vector3d vel_, double yaw_vel_)
 {
   geometry_msgs::Twist actor_vel_twist;
   actor_vel_twist.linear.x = vel_.X();
   actor_vel_twist.linear.y = vel_.Y();
   actor_vel_twist.linear.z = vel_.Z();
-  actor_vel_twist.angular.z = yaw_vel;
+  actor_vel_twist.angular.z = yaw_vel_;
   VelPublisher.publish(actor_vel_twist);   
   //ignition::math::Vector3d pose_  = this->actor->WorldPose().Pos();
 }
+  

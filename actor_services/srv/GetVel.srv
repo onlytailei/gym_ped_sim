@@ -1,0 +1,8 @@
+bool set_flag
+float32 new_x
+float32 new_y
+float32 new_yaw
+------
+float32 x
+float32 y
+float32 yaw

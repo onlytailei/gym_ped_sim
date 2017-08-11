@@ -58,6 +58,7 @@ find_package(catkin REQUIRED
 add_service_files(
   FILES
   SetPose.srv
+  GetVel.srv
 #   Service2.srv
 )
 
