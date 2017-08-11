@@ -198,12 +198,12 @@ void ActorPlugin::ChooseNewTarget()
   this->target = newTarget;
 }
 
-ignition::math::Vector3d ActorPlugin::CallActorVelClient(std::string actor_name_){
-  GetVelClient = this->rosNode->serviceClient<actor_services::GetVel>("/"+actor_name_+"/GetActorVelocity");
+ignition::math::Vector3d ActorPlugin::CallActorVelClient(std::string actor_name_) const{
+  ros::ServiceClient GetVelClient = this->rosNode->serviceClient<actor_services::GetVel>("/"+actor_name_+"/GetActorVelocity");
   actor_services::GetVel getvel_srv;
   getvel_srv.request.set_flag = false;
   GetVelClient.call(getvel_srv);
-  GetVelClient.shutdown()
+  GetVelClient.shutdown();
   return ignition::math::Vector3d(getvel_srv.response.x, getvel_srv.response.y, 0);
 }
 
@@ -260,7 +260,7 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
     // Iterate over all neighbors in range of influence.
     for(unsigned int i = 0; i < this->world->ModelCount(); i++) {
       physics::ModelPtr currentAgent = this->world->ModelByIndex(i);
-      
+      //std::string currentAgentName = currentAgent->GetName();
       // Check if other actor, don't calculate social force to objects
       if (!currentAgent->HasType(physics::Base::EntityType::ACTOR)) {
         continue;
@@ -284,9 +284,10 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
      
         
       // compute difference between both agents' velocity vectors
-      //ignition::math::Vector3d velDiff = _velocity - currentAgent->GetWorldLinearVel().Ign();
-      ignition::math::Vector3d velDiff = _velocity - CallActorVelClient(currentAgent->GetName().c_str());
-      //ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y(), _velocity.Z());
+      // ignition::math::Vector3d velDiff = _velocity - currentAgent->GetWorldLinearVel().Ign();
+    
+      ignition::math::Vector3d velDiff = _velocity - CallActorVelClient(currentAgent->GetName());
+      // ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y(), _velocity.Z());
       
       // compute interaction direction t_ij
       ignition::math::Vector3d interactionVector = lambdaImportance * velDiff + diffDirection;

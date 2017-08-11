@@ -59,9 +59,9 @@ namespace gazebo
     
     private: ros::ServiceServer GetVelService;
     
-    private: ros::ServiceClient GetVelClient;
+    //private: ros::ServiceClient GetVelClient;
     
-    private: ignition::math::Vector3d CallActorVelClinet(std::string);
+    private: ignition::math::Vector3d CallActorVelClient(std::string) const;
 
     /// \brief Helper function to choose a new target location
     private: void ChooseNewTarget();
