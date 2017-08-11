@@ -293,8 +293,7 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       double theta = otherAngle - thisAngle;
      
       theta = (theta>PI)?(theta-2*PI):((theta<-PI)?(theta+2*PI):theta);
-      assert(theta<=PI);
-      assert(theta>=-PI);
+      assert((theta<=PI)&&(theta>=-PI));
 
       // Get sign of theta.
       double thetaSign = (theta == 0.0) ? (0.0) : (theta / std::fabs(theta));
@@ -421,9 +420,8 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 
   // Compute the yaw orientation
   // Needs to be reworked!
-  ignition::math::Angle yaw = atan2(this->velocity.Y(), this->velocity.X()) + 1.5707 - rpy.Z();
+  ignition::math::Angle yaw = atan2(this->velocity.Y(), this->velocity.X()) + 0.5*PI - rpy.Z();
   yaw.Normalize();
-
 
   /*
   // Rotate in place, instead of jumping.
@@ -439,7 +437,6 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   }
   */
 
-
   pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
 
   // Make sure the actor stays within bounds
@@ -452,6 +449,8 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 
   double distanceTraveled = (pose.Pos() -
       this->actor->WorldPose().Pos()).Length();
+  //publish the speed
+  CallPublisher()  
 
   this->actor->SetWorldPose(pose, false, false);
   this->actor->SetScriptTime(this->actor->ScriptTime() +
