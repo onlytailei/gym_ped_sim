@@ -166,7 +166,7 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
       &ActorPlugin::GetVelCallback, this);
   
   // Broadcast the model velocity and position topic
-  this->VelPublisher = this->rosNode->advertise<geometry_msgs::Pose>("/"+this->actor->GetName()+"/actor_vel",1);
+  this->VelPublisher = this->rosNode->advertise<geometry_msgs::Twist>("/"+this->actor->GetName()+"/actor_vel",1);
   //this->PosePublisher = this->rosNode->advertise<geometry_msgs::Twist>("/"+this->actor->GetName()+"/actor_pose",1);
 
   // Spin up the queue helper thread.
