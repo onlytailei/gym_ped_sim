@@ -164,7 +164,7 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
   // Broadcast the model velocity and position topic
   this->VelPublisher = this->rosNode->advertise<geometry_msgs::Pose>("/"+this->actor->GetName()+"/actor_vel",1);
-  this->PosePublisher = this->rosNode->advertise<geometry_msgs::Twist>("/"+this->actor->GetName()+"/actor_pose",1);
+  //this->PosePublisher = this->rosNode->advertise<geometry_msgs::Twist>("/"+this->actor->GetName()+"/actor_pose",1);
 
   // Spin up the queue helper thread.
   this->rosQueueThread =
@@ -273,11 +273,11 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
       // compute difference between both agents' velocity vectors
       ignition::math::Vector3d velDiff = _velocity - currentAgent->GetWorldLinearVel().Ign();
-      ignition::math::Vector3d relativevel = currentAgent->GetWorldLinearVel().Ign();
-      ignition::math::Vector3d thisvel = this->actor->GetWorldLinearVel().Ign();
-      ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y(), _velocity.Z());
-      ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", currentAgent->GetName().c_str(), relativevel.X(), relativevel.Y(), relativevel.Z());
-      ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), thisvel.X(), thisvel.Y(), thisvel.Z());
+      //ignition::math::Vector3d relativevel = currentAgent->GetWorldLinearVel().Ign();
+      //ignition::math::Vector3d thisvel = this->actor->GetWorldLinearVel().Ign();
+      //ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y(), _velocity.Z());
+      //ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", currentAgent->GetName().c_str(), relativevel.X(), relativevel.Y(), relativevel.Z());
+      //ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), thisvel.X(), thisvel.Y(), thisvel.Z());
       
       // compute interaction direction t_ij
       ignition::math::Vector3d interactionVector = lambdaImportance * velDiff + diffDirection;
@@ -450,7 +450,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   double distanceTraveled = (pose.Pos() -
       this->actor->WorldPose().Pos()).Length();
   //publish the speed
-  CallPublisher()  
+  CallPublisher(this->velocity, yaw.Radian()/dt); 
 
   this->actor->SetWorldPose(pose, false, false);
   this->actor->SetScriptTime(this->actor->ScriptTime() +
@@ -499,8 +499,13 @@ void ActorPlugin::QueueThread()
   }
 }
 
-void ActorPlugin::CallPublisher()
+void ActorPlugin::CallPublisher(ignition::math::Vector3d vel_, double yaw_vel)
 {
-  ignition::math::Vector3d vel_ = this->actor->RelativeLinearVel();
-  ignition::math::Vector3d pose_  = this->actor->WorldPose().Pos();
+  geometry_msgs::Twist actor_vel_twist;
+  actor_vel_twist.linear.x = vel_.X();
+  actor_vel_twist.linear.y = vel_.Y();
+  actor_vel_twist.linear.z = vel_.Z();
+  actor_vel_twist.angular.z = yaw_vel;
+  VelPublisher.publish(actor_vel_twist);   
+  //ignition::math::Vector3d pose_  = this->actor->WorldPose().Pos();
 }
