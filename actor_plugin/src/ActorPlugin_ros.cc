@@ -51,7 +51,7 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->connections.push_back(event::Events::ConnectWorldUpdateBegin(
         std::bind(&ActorPlugin::OnUpdate, this, std::placeholders::_1)));
 
-  this->velocity = 0.5;
+  this->velocity = 1.0;
 
   // Read in the social force factor
   if (_sdf->HasElement("socialForce"))
@@ -76,7 +76,7 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     this->vMax = _sdf->Get<double>("speed");
   else
     // just take the average speed if not given
-    this->vMax = 1.10;
+    this->vMax = 1.34;
 
   // Read in the dodge direction, right by default
   if (_sdf->HasElement("dodgingRight"))
@@ -238,7 +238,7 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 {
     // define relative importance of position vs velocity vector
     // (set according to Moussaid-Helbing 2009)
-    const double lambdaImportance = 2.0;
+    const double lambdaImportance = 2.5;
 
     // define speed interaction
     // (set according to Moussaid-Helbing 2009)
@@ -255,7 +255,7 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
     ignition::math::Vector3d force;
 
     // TODO: set to a good range.
-    double neighborRange = 20.0;
+    double neighborRange = 4.0;
 
     // Iterate over all neighbors in range of influence.
     for(unsigned int i = 0; i < this->world->ModelCount(); i++) {
@@ -310,7 +310,7 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       assert((theta<=PI)&&(theta>=-PI));
 
       // Get sign of theta.
-      double thetaSign = (theta == 0.0) ? (0.0) : (theta / std::fabs(theta));
+      double thetaSign = (std::fabs(theta) == 0.00) ? (0.0) : (theta / std::fabs(theta));
       if (this->actor->GetName()=="actor0"){
       	ROS_ERROR("%s, theta: %lf, this angle: %lf, other angle: %lf", this->actor->GetName().c_str(), theta, thisAngle, otherAngle);
       }
@@ -394,11 +394,11 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   //  ROS_ERROR("%s, Actor Pose: %lf, %lf, %lf", this->actor->GetName().c_str(), pose.Pos().X(), pose.Pos().Y(), pose.Pos().Z());
   //}
   // Sum of all forces
-  ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce) + (this->obstacleForceFactor*obstacleForce);
+  ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce) + (this->obstacleForceFactor * obstacleForce);
 
   // Calculate new velocity
-  //this->velocity = 0.5 * this->velocity + a * dt;
-  this->velocity = this->velocity + a * dt;
+  this->velocity = 0.5 * this->velocity + a * dt;
+  //this->velocity = this->velocity + a * dt;
 
   // Don't exceed max speed
   double speed = this->velocity.Length();
