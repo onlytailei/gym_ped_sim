@@ -378,7 +378,8 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   // Direct vector to the current target
   ignition::math::Vector3d pos = this->target - pose.Pos();
   ignition::math::Vector3d rpy = pose.Rot().Euler();
-
+  
+  auto temp_pose = pose.Pos();
   // Actually move
   pose.Pos() = pose.Pos() + this->velocity * dt;
 
@@ -447,9 +448,10 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   // Rotate in place, instead of jumping.
   if (std::abs(yaw.Radian()) > IGN_DTOR(10))
   {
+    pose.Pos() = temp_pose;
+    this->velocity = ignition::math::Vector3d(0,0,0);
     pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+
         yaw.Radian()*0.001);
-     
   }
   else
   {
@@ -463,17 +465,17 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 
   // Distance traveled is used to coordinate motion with the walking
   // animation
-
-  double distanceTraveled = (pose.Pos() -
+    double distanceTraveled = (pose.Pos() -
       this->actor->WorldPose().Pos()).Length();
-  //publish the speed
-  yaw_vel = yaw.Radian()/dt;
-  CallPublisher(this->velocity, yaw_vel); 
+    //publish the speed
+    yaw_vel = yaw.Radian()/dt;
+    CallPublisher(this->velocity, yaw_vel); 
 
-  this->actor->SetWorldPose(pose, false, false);
-  this->actor->SetScriptTime(this->actor->ScriptTime() +
-      (distanceTraveled * this->animationFactor));
-  this->lastUpdate = _info.simTime;
+    this->actor->SetWorldPose(pose, false, false);
+    this->actor->SetScriptTime(this->actor->ScriptTime() +
+       (distanceTraveled * this->animationFactor));
+    this->lastUpdate = _info.simTime;
+
 }
 
 // Set target position service callback. Response is the target position right now
