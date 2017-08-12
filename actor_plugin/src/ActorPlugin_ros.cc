@@ -76,7 +76,7 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     this->vMax = _sdf->Get<double>("speed");
   else
     // just take the average speed if not given
-    this->vMax = 1.34;
+    this->vMax = 1.10;
 
   // Read in the dodge direction, right by default
   if (_sdf->HasElement("dodgingRight"))
@@ -286,8 +286,12 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       // compute difference between both agents' velocity vectors
       // ignition::math::Vector3d velDiff = _velocity - currentAgent->GetWorldLinearVel().Ign();
     
-      ignition::math::Vector3d velDiff = _velocity - CallActorVelClient(currentAgent->GetName());
-      // ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y(), _velocity.Z());
+      ignition::math::Vector3d other_vel = CallActorVelClient(currentAgent->GetName());
+      ignition::math::Vector3d velDiff = _velocity - other_vel;
+      if (this->actor->GetName()=="actor0"){
+      	ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y(), _velocity.Z());
+      	//ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", currentAgent->GetName().c_str(), other_vel.X(), other_vel.Y(), other_vel.Z());
+      }
       
       // compute interaction direction t_ij
       ignition::math::Vector3d interactionVector = lambdaImportance * velDiff + diffDirection;
@@ -307,9 +311,9 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
       // Get sign of theta.
       double thetaSign = (theta == 0.0) ? (0.0) : (theta / std::fabs(theta));
-      //if (this->actor->GetName()=="actor0"){
-      //	ROS_ERROR("%s, theta: %lf, abs theta: %lf, thetaSign: %lf", this->actor->GetName().c_str(), theta, std::fabs(theta), thetaSign);
-      //}
+      if (this->actor->GetName()=="actor0"){
+      	ROS_ERROR("%s, theta: %lf, this angle: %lf, other angle: %lf", this->actor->GetName().c_str(), theta, thisAngle, otherAngle);
+      }
       //ROS_ERROR("std abs theta: %lf, thetaSign: %d", std::abs(theta),thetaSign);
       // compute model parameter B = gamma * ||D||
       double B = gamma * interactionLength;
@@ -393,7 +397,8 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce) + (this->obstacleForceFactor*obstacleForce);
 
   // Calculate new velocity
-  this->velocity = 0.5 * this->velocity + a * dt;
+  //this->velocity = 0.5 * this->velocity + a * dt;
+  this->velocity = this->velocity + a * dt;
 
   // Don't exceed max speed
   double speed = this->velocity.Length();
@@ -433,26 +438,28 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   ignition::math::Angle yaw = atan2(this->velocity.Y(), this->velocity.X()) + 0.5*PI - rpy.Z();
   yaw.Normalize();
 
-  /*
+  
+  // Make sure the actor stays within bounds
+  pose.Pos().X(std::max(-10.0, std::min(10.0, pose.Pos().X())));
+  pose.Pos().Y(std::max(-10.0, std::min(10.0, pose.Pos().Y())));
+  pose.Pos().Z(1.02);
+  
   // Rotate in place, instead of jumping.
   if (std::abs(yaw.Radian()) > IGN_DTOR(10))
   {
     pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+
         yaw.Radian()*0.001);
+     
   }
   else
   {
     // pose.Pos() += this->velocity * dt;
     pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
   }
-  */
+  
 
-  pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
+  //pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
 
-  // Make sure the actor stays within bounds
-  pose.Pos().X(std::max(-10.0, std::min(10.0, pose.Pos().X())));
-  pose.Pos().Y(std::max(-10.0, std::min(10.0, pose.Pos().Y())));
-  pose.Pos().Z(1.02);
 
   // Distance traveled is used to coordinate motion with the walking
   // animation

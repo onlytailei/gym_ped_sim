@@ -56,7 +56,7 @@ speedOfActor = dict()
 
 startingPosition[0] = (-4, 0)
 targetPosition[0] = (4, 0)
-speedOfActor[0] = 1.0
+speedOfActor[0] = 0.5
 dodgingDirection[0] = "right"
 
 startingPosition[1] = (-8, 0)

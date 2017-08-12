@@ -4,12 +4,12 @@
     
     <arg name="world_file"  default="$(find actor_services)/worlds/ped_world.world"/>
     
-    <arg name="gui" default="true"/>
+    <arg name="gui" default="false"/>
     
     <node name="gazebo" pkg="gazebo_ros" type="gzserver" output="screen"
         args="$(arg world_file)" />
 
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find actor_services)/rviz/tf_show.rviz"/>
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find actor_services)/rviz/tf_show.rviz"/> -->
 
 	<!-- start gazebo client -->
     <group if="$(arg gui)">
