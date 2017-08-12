@@ -379,9 +379,6 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   ignition::math::Vector3d pos = this->target - pose.Pos();
   ignition::math::Vector3d rpy = pose.Rot().Euler();
   
-  auto temp_pose = pose.Pos();
-  // Actually move
-  pose.Pos() = pose.Pos() + this->velocity * dt;
 
   // Get the desired force to waypoint: "I want to go there at full speed!"
   ignition::math::Vector3d desiredForce = pos.Normalize() * this->vMax;
@@ -389,11 +386,6 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   ignition::math::Vector3d obstacleForce = ObstacleForce(pose);
 
   ignition::math::Vector3d socialForce_ = SocialForce(pose, this->velocity);
-  //if (this->actor->GetName()=="actor0"){
-  //  ROS_ERROR("%s, Social Force: %lf, %lf, %lf", this->actor->GetName().c_str(), socialForce_.X(), socialForce_.Y(), socialForce_.Z());
-  //  ROS_ERROR("%s, Desired Force: %lf, %lf, %lf", this->actor->GetName().c_str(), desiredForce.X(), desiredForce.Y(), desiredForce.Z());
-  //  ROS_ERROR("%s, Actor Pose: %lf, %lf, %lf", this->actor->GetName().c_str(), pose.Pos().X(), pose.Pos().Y(), pose.Pos().Z());
-  //}
   // Sum of all forces
   ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce) + (this->obstacleForceFactor * obstacleForce);
 
@@ -407,6 +399,46 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
     this->velocity = this->velocity.Normalize() * this->vMax;
   }
 
+  // Needs to be reworked!
+  ignition::math::Angle yaw = atan2(this->velocity.Y(), this->velocity.X()) + 0.5*PI - rpy.Z();
+  yaw.Normalize();
+
+  
+  // Make sure the actor stays within bounds
+  
+  // Rotate in place, instead of jumping.
+  if (std::abs(yaw.Radian()) > IGN_DTOR(10))
+  {
+    //this->velocity = this->velocity*0.5;
+    pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
+    yaw_vel = yaw.Radian()/dt;
+  }
+  else
+  {
+    // pose.Pos() += this->velocity * dt;
+    pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
+    yaw_vel = yaw.Radian()/dt;
+  }
+  //pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
+  // Distance traveled is used to coordinate motion with the walking
+  // animation
+
+    // Actually move
+    pose.Pos() = pose.Pos() + this->velocity * dt;
+    pose.Pos().X(std::max(-10.0, std::min(10.0, pose.Pos().X())));
+    pose.Pos().Y(std::max(-10.0, std::min(10.0, pose.Pos().Y())));
+    pose.Pos().Z(1.02);
+
+    double distanceTraveled = (pose.Pos() -
+      this->actor->WorldPose().Pos()).Length();
+    //publish the speed
+    CallPublisher(this->velocity, yaw_vel); 
+
+    this->actor->SetWorldPose(pose, false, false);
+    this->actor->SetScriptTime(this->actor->ScriptTime() +
+       (distanceTraveled * this->animationFactor));
+    this->lastUpdate = _info.simTime;
+  
   // ros stuff
   static tf::TransformBroadcaster br;
   tf::Transform tf_transform;
@@ -416,11 +448,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   tf_transform.setRotation(tf_q);
   br.sendTransform(tf::StampedTransform(tf_transform, ros::Time::now(), "default_world", this->actor->GetName()));
   ros::spinOnce();
-
-
-  // Choose a new target position if the actor has reached its current
-  // target. It will go back to the start position defaultly.
-
+  
   double distance = pose.Pos().Distance(this->target);
 
   if (distance < 0.3)
@@ -430,52 +458,6 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
     this->target = temp;
     pos = this->target - pose.Pos();
   }
-
-
-  // TODO: Handle obstacles
-
-  // Compute the yaw orientation
-  // Needs to be reworked!
-  ignition::math::Angle yaw = atan2(this->velocity.Y(), this->velocity.X()) + 0.5*PI - rpy.Z();
-  yaw.Normalize();
-
-  
-  // Make sure the actor stays within bounds
-  pose.Pos().X(std::max(-10.0, std::min(10.0, pose.Pos().X())));
-  pose.Pos().Y(std::max(-10.0, std::min(10.0, pose.Pos().Y())));
-  pose.Pos().Z(1.02);
-  
-  // Rotate in place, instead of jumping.
-  if (std::abs(yaw.Radian()) > IGN_DTOR(10))
-  {
-    pose.Pos() = temp_pose;
-    this->velocity = ignition::math::Vector3d(0,0,0);
-    pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+
-        yaw.Radian()*0.001);
-  }
-  else
-  {
-    // pose.Pos() += this->velocity * dt;
-    pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
-  }
-  
-
-  //pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
-
-
-  // Distance traveled is used to coordinate motion with the walking
-  // animation
-    double distanceTraveled = (pose.Pos() -
-      this->actor->WorldPose().Pos()).Length();
-    //publish the speed
-    yaw_vel = yaw.Radian()/dt;
-    CallPublisher(this->velocity, yaw_vel); 
-
-    this->actor->SetWorldPose(pose, false, false);
-    this->actor->SetScriptTime(this->actor->ScriptTime() +
-       (distanceTraveled * this->animationFactor));
-    this->lastUpdate = _info.simTime;
-
 }
 
 // Set target position service callback. Response is the target position right now
