@@ -298,11 +298,11 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
     
       ignition::math::Vector3d other_vel = CallActorVelClient(currentAgent->GetName());
       ignition::math::Vector3d velDiff = _velocity - other_vel;
-      //if (this->actor->GetName()=="actor0"){
-      	//ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y(), _velocity.Z());
-      	//ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov);
-      	//ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", currentAgent->GetName().c_str(), other_vel.X(), other_vel.Y(), other_vel.Z());
-      //}
+      if (this->actor->GetName()=="actor0"){
+      	ROS_ERROR("%s, vel x: %lf, vel y: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y());
+      	ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov.Radian());
+      	ROS_ERROR("%s, vel x: %lf, vel y: %lf", currentAgent->GetName().c_str(), other_vel.X(), other_vel.Y());
+      }
       
       // compute interaction direction t_ij
       ignition::math::Vector3d interactionVector = lambdaImportance * velDiff + diffDirection;
@@ -398,14 +398,14 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   ignition::math::Vector3d socialForce_ = SocialForce(pose, this->velocity);
   end = std::chrono::system_clock::now();
   std::chrono::duration<double> elapsed_seconds = end-start;
-  ROS_ERROR("time count: %lf", elapsed_seconds.count());
+  //ROS_ERROR("time count: %lf", elapsed_seconds.count());
   // Sum of all forces
   //ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce) + (this->obstacleForceFactor * obstacleForce);
   ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce);
 
   // Calculate new velocity
-  this->velocity = 0.5 * this->velocity + a * dt;
-  //this->velocity = this->velocity + a * dt;
+  //this->velocity = 0.5 * this->velocity + a * dt;
+  this->velocity = this->velocity + a * dt;
 
   // Don't exceed max speed
   double speed = this->velocity.Length();
