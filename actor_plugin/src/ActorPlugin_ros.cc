@@ -255,42 +255,38 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
     ignition::math::Vector3d force;
 
     // TODO: set to a good range.
-    double neighborRange = 4.0;
+    const double neighborRange = 4.0;
     
-    double fov_depth_camera = 70.0 / 180.0 * PI;
+    const double fov_depth_camera = 70.0 / 180.0 * PI;
      
     // Iterate over all neighbors in range of influence.
     for(unsigned int i = 0; i < this->world->ModelCount(); i++) {
       physics::ModelPtr currentAgent = this->world->ModelByIndex(i);
-      //std::string currentAgentName = currentAgent->GetName();
       // Check if other actor, don't calculate social force to objects
       if ((!currentAgent->HasType(physics::Base::EntityType::ACTOR))&&
 	(currentAgent->GetName()!="turtlebot3_burger")) {
-      	//ROS_ERROR("%s", currentAgent->GetName().c_str());
         continue;
       }
-
       // Do not calculate social force to self.
       if (currentAgent == this->actor) {
         continue;
       }
-
+      ignition::math::Vector3d currentPose = currentAgent->WorldPose().Pos();
       // Only compute for other agents in neighborhood range.
-      double distance = currentAgent->WorldPose().Pos().Distance(_pose.Pos());
+      double distance = currentPose.Distance(_pose.Pos());
       if (distance > neighborRange)
       {
         continue;
       }
-
       // Calculate difference between both agents' positions
-      ignition::math::Vector3d diff = currentAgent->WorldPose().Pos() - _pose.Pos();
+      ignition::math::Vector3d diff = currentPose - _pose.Pos();
       ignition::math::Vector3d diffDirection = diff.Normalize();
      
       double otherAngle = atan2(diffDirection.Y(), diffDirection.X());
-      double angle_fov = otherAngle+0.5*PI-_pose.Rot().Yaw();
-      angle_fov = (angle_fov>PI)?(angle_fov-2*PI):((angle_fov<-PI)?(angle_fov+2*PI):angle_fov);
+      ignition::math::Angle angle_fov(otherAngle+0.5*PI-_pose.Rot().Yaw());
+      angle_fov.Normalize();
       //ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov);
-      if (std::fabs(angle_fov) > 0.5*fov_depth_camera)
+      if (std::fabs(angle_fov.Radian()) > 0.5*fov_depth_camera)
       {
         continue;
       }
@@ -315,14 +311,13 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       double thisAngle = atan2(interactionDirection.Y(), interactionDirection.X());
       // thisAngle.Normalize();
       // otherAngle.Normalize();
-
-      double theta = otherAngle - thisAngle;
-     
-      theta = (theta>PI)?(theta-2*PI):((theta<-PI)?(theta+2*PI):theta);
-      assert((theta<=PI)&&(theta>=-PI));
+      
+      ignition::math::Angle theta_angle(otherAngle-thisAngle);
+      theta_angle.Normalize();
+      double theta = theta_angle.Radian();
 
       // Get sign of theta.
-      double thetaSign = (std::fabs(theta) == 0.00) ? (0.0) : (theta / std::fabs(theta));
+      double thetaSign = (theta == 0.00) ? (0.0) : (theta / std::fabs(theta));
       //if (this->actor->GetName()=="actor0"){
       //	ROS_ERROR("%s, theta: %lf, this angle: %lf, other angle: %lf", this->actor->GetName().c_str(), theta, thisAngle, otherAngle);
       //}
