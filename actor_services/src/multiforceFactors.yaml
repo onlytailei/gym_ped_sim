@@ -1,6 +1,6 @@
-SocialForceFactor: 100.0
+SocialForceFactor: 600.0
 #SocialForceFactor: 2000
-DesiredForceFactor: 400.0
+DesiredForceFactor: 200.0
 #DesiredForceFactor: 100.0
 ObstacleForceFactor: 0.0
 AnimationFactor: 5.0

@@ -50,13 +50,13 @@ skin_list = ["moonwalk.dae",
 
 # add speed and doghingdirection
 actor_list = []
-for item in range(10):
+for item in range(6):
     actor = Element("actor", name="actor"+str(item))
 
     pose = Element("pose")
     #randomly generate position to pose text
-    x = str((np.random.rand()-0.5)*12)
-    y = str((np.random.rand()-0.5)*12)
+    x = str((np.random.rand()-0.5)*4)
+    y = str((np.random.rand()-0.5)*4)
     pose.text = x+" "+y+" "+"1.02 0 0 0"
     actor.append(pose)
 
@@ -93,8 +93,8 @@ for item in range(10):
     dodgingRight = Element("dodgingRight")
     dodgingRight.text = str(np.random.rand() < 0.5).lower()
     target = Element("target")
-    x = str((np.random.rand()-0.5)*12)
-    y = str((np.random.rand()-0.5)*12)
+    x = str((np.random.rand()-0.5)*4)
+    y = str((np.random.rand()-0.5)*4)
     target.text =  x+" "+y+" "+"1.02"
     target_weight = Element("target_weight")
     target_weight.text = "1.5"
