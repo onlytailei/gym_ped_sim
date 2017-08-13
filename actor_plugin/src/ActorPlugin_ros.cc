@@ -390,11 +390,12 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   // Get the desired force to waypoint: "I want to go there at full speed!"
   ignition::math::Vector3d desiredForce = pos.Normalize() * this->vMax;
 
-  ignition::math::Vector3d obstacleForce = ObstacleForce(pose);
+  //ignition::math::Vector3d obstacleForce = ObstacleForce(pose);
 
   ignition::math::Vector3d socialForce_ = SocialForce(pose, this->velocity);
   // Sum of all forces
-  ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce) + (this->obstacleForceFactor * obstacleForce);
+  //ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce) + (this->obstacleForceFactor * obstacleForce);
+  ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce);
 
   // Calculate new velocity
   this->velocity = 0.5 * this->velocity + a * dt;
@@ -432,14 +433,14 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 
     // Actually move
     pose.Pos() = pose.Pos() + this->velocity * dt;
-    pose.Pos().X(std::max(-10.0, std::min(10.0, pose.Pos().X())));
-    pose.Pos().Y(std::max(-10.0, std::min(10.0, pose.Pos().Y())));
+    //pose.Pos().X(std::max(-10.0, std::min(10.0, pose.Pos().X())));
+    //pose.Pos().Y(std::max(-10.0, std::min(10.0, pose.Pos().Y())));
     pose.Pos().Z(1.02);
 
     double distanceTraveled = (pose.Pos() -
       this->actor->WorldPose().Pos()).Length();
     //publish the speed
-    CallPublisher(this->velocity, yaw_vel); 
+    //CallPublisher(this->velocity, yaw_vel); 
 
     this->actor->SetWorldPose(pose, false, false);
     this->actor->SetScriptTime(this->actor->ScriptTime() +
@@ -522,14 +523,14 @@ void ActorPlugin::QueueThread()
   }
 }
 
-void ActorPlugin::CallPublisher(ignition::math::Vector3d vel_, double yaw_vel_)
-{
-  geometry_msgs::Twist actor_vel_twist;
-  actor_vel_twist.linear.x = vel_.X();
-  actor_vel_twist.linear.y = vel_.Y();
-  actor_vel_twist.linear.z = vel_.Z();
-  actor_vel_twist.angular.z = yaw_vel_;
-  VelPublisher.publish(actor_vel_twist);   
-  //ignition::math::Vector3d pose_  = this->actor->WorldPose().Pos();
-}
+//void ActorPlugin::CallPublisher(ignition::math::Vector3d vel_, double yaw_vel_)
+//{
+  //geometry_msgs::Twist actor_vel_twist;
+  //actor_vel_twist.linear.x = vel_.X();
+  //actor_vel_twist.linear.y = vel_.Y();
+  //actor_vel_twist.linear.z = vel_.Z();
+  //actor_vel_twist.angular.z = yaw_vel_;
+  //VelPublisher.publish(actor_vel_twist);   
+  ////ignition::math::Vector3d pose_  = this->actor->WorldPose().Pos();
+//}
   
