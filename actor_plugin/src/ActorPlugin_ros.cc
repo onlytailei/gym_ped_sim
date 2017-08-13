@@ -238,7 +238,7 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 {
     // define relative importance of position vs velocity vector
     // (set according to Moussaid-Helbing 2009)
-    const double lambdaImportance = 2.5;
+    const double lambdaImportance = 2.0;
 
     // define speed interaction
     // (set according to Moussaid-Helbing 2009)
@@ -256,7 +256,9 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
     // TODO: set to a good range.
     double neighborRange = 4.0;
-
+    
+    double fov_depth_camera = 70.0 / 180.0 * PI;
+     
     // Iterate over all neighbors in range of influence.
     for(unsigned int i = 0; i < this->world->ModelCount(); i++) {
       physics::ModelPtr currentAgent = this->world->ModelByIndex(i);
@@ -282,6 +284,14 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       ignition::math::Vector3d diff = currentAgent->WorldPose().Pos() - _pose.Pos();
       ignition::math::Vector3d diffDirection = diff.Normalize();
      
+      double otherAngle = atan2(diffDirection.Y(), diffDirection.X());
+      double angle_fov = otherAngle+0.5*PI-_pose.Rot().Yaw();
+      angle_fov = (angle_fov>PI)?(angle_fov-2*PI):((angle_fov<-PI)?(angle_fov+2*PI):angle_fov);
+      ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov);
+      if (std::fabs(angle_fov) > 0.5*fov_depth_camera)
+      {
+        continue;
+      }
         
       // compute difference between both agents' velocity vectors
       // ignition::math::Vector3d velDiff = _velocity - currentAgent->GetWorldLinearVel().Ign();
@@ -290,6 +300,7 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       ignition::math::Vector3d velDiff = _velocity - other_vel;
       if (this->actor->GetName()=="actor0"){
       	ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y(), _velocity.Z());
+      	ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov);
       	//ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", currentAgent->GetName().c_str(), other_vel.X(), other_vel.Y(), other_vel.Z());
       }
       
@@ -301,7 +312,6 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       // compute angle theta (between interaction and position difference vector)
       double thisAngle = atan2(interactionDirection.Y(), interactionDirection.X());
       // thisAngle.Normalize();
-      double otherAngle = atan2(diffDirection.Y(), diffDirection.X());
       // otherAngle.Normalize();
 
       double theta = otherAngle - thisAngle;
