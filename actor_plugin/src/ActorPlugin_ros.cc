@@ -264,7 +264,9 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       physics::ModelPtr currentAgent = this->world->ModelByIndex(i);
       //std::string currentAgentName = currentAgent->GetName();
       // Check if other actor, don't calculate social force to objects
-      if (!currentAgent->HasType(physics::Base::EntityType::ACTOR)) {
+      if ((!currentAgent->HasType(physics::Base::EntityType::ACTOR))&&
+	(currentAgent->GetName()!="turtlebot3_burger")) {
+      	//ROS_ERROR("%s", currentAgent->GetName().c_str());
         continue;
       }
 
@@ -287,7 +289,7 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
       double otherAngle = atan2(diffDirection.Y(), diffDirection.X());
       double angle_fov = otherAngle+0.5*PI-_pose.Rot().Yaw();
       angle_fov = (angle_fov>PI)?(angle_fov-2*PI):((angle_fov<-PI)?(angle_fov+2*PI):angle_fov);
-      ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov);
+      //ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov);
       if (std::fabs(angle_fov) > 0.5*fov_depth_camera)
       {
         continue;
@@ -298,11 +300,11 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
     
       ignition::math::Vector3d other_vel = CallActorVelClient(currentAgent->GetName());
       ignition::math::Vector3d velDiff = _velocity - other_vel;
-      if (this->actor->GetName()=="actor0"){
-      	ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y(), _velocity.Z());
-      	ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov);
+      //if (this->actor->GetName()=="actor0"){
+      	//ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y(), _velocity.Z());
+      	//ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov);
       	//ROS_ERROR("%s, vel x: %lf, vel y: %lf, vel z: %lf", currentAgent->GetName().c_str(), other_vel.X(), other_vel.Y(), other_vel.Z());
-      }
+      //}
       
       // compute interaction direction t_ij
       ignition::math::Vector3d interactionVector = lambdaImportance * velDiff + diffDirection;
@@ -321,9 +323,9 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
       // Get sign of theta.
       double thetaSign = (std::fabs(theta) == 0.00) ? (0.0) : (theta / std::fabs(theta));
-      if (this->actor->GetName()=="actor0"){
-      	ROS_ERROR("%s, theta: %lf, this angle: %lf, other angle: %lf", this->actor->GetName().c_str(), theta, thisAngle, otherAngle);
-      }
+      //if (this->actor->GetName()=="actor0"){
+      //	ROS_ERROR("%s, theta: %lf, this angle: %lf, other angle: %lf", this->actor->GetName().c_str(), theta, thisAngle, otherAngle);
+      //}
       //ROS_ERROR("std abs theta: %lf, thetaSign: %d", std::abs(theta),thetaSign);
       // compute model parameter B = gamma * ||D||
       double B = gamma * interactionLength;
