@@ -397,7 +397,8 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   start = std::chrono::system_clock::now();
   ignition::math::Vector3d socialForce_ = SocialForce(pose, this->velocity);
   end = std::chrono::system_clock::now();
-  ROS_ERROR("time count: %ld", (end-start).count());
+  std::chrono::duration<double> elapsed_seconds = end-start;
+  ROS_ERROR("time count: %lf", elapsed_seconds.count());
   // Sum of all forces
   //ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce) + (this->obstacleForceFactor * obstacleForce);
   ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce);
