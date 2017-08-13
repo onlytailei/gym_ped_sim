@@ -59,7 +59,7 @@ speedOfActor = dict()
 startingPosition = {0:(-4,-0.5), 1:(-3.5,0.5), 2:(4, -0.5), 3:(3.5,0.5)}
 targetPosition = {0:(3.5,-0.5), 1:(4,0.5), 2:(-3.5, -0.5), 3:(-4,0.5)}
 
-for item in range(4)
+for item in range(4):
     speedOfActor[item] = 1.00
     dodgingDirection[item] = "right"
 
