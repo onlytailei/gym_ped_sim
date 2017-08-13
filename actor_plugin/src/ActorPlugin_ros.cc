@@ -24,6 +24,8 @@
 #include <geometry_msgs/Pose.h>
 #include <cassert>
 #include <cmath>
+#include <ctime>
+#include <chrono>
 #include "ActorPlugin.hh"
 #include <ros/console.h>
 #include <iostream>
@@ -391,8 +393,11 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   ignition::math::Vector3d desiredForce = pos.Normalize() * this->vMax;
 
   //ignition::math::Vector3d obstacleForce = ObstacleForce(pose);
-
+  std::chrono::time_point<std::chrono::system_clock> start, end;
+  start = std::chrono::system_clock::now();
   ignition::math::Vector3d socialForce_ = SocialForce(pose, this->velocity);
+  end = std::chrono::system_clock::now();
+  ROS_ERROR("time count: %ld", (end-start).count());
   // Sum of all forces
   //ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce) + (this->obstacleForceFactor * obstacleForce);
   ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce);
