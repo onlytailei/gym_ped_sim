@@ -13,9 +13,24 @@ import rospkg
 from lxml import etree
 from lxml.etree import Element
 from copy import deepcopy
+import yaml
 
-#rospy.init_node('creat_world', anonymous=True)
 rospack = rospkg.RosPack()
+with open(rospack.get_path("actor_services")+"/src/multiforceFactors.yaml", 'r') as stream:
+    try:
+        factorData = yaml.load(stream)
+    except yaml.YAMLError as exc:
+        print(exc)
+
+SocialForce = factorData["SocialForceFactor"]
+DesiredForce = factorData["DesiredForceFactor"]
+ObstacleForce = factorData["ObstacleForceFactor"]
+AnimationFactor = factorData["AnimationFactor"]
+print(SocialForce)
+print(DesiredForce)
+print(ObstacleForce)
+print(AnimationFactor)
+
 plugin_pkg_path = rospack.get_path("actor_plugin")
 plugin_path = plugin_pkg_path + "/lib/libactorplugin_ros.so"
 actor_pkg_path = rospack.get_path("actor_services")
@@ -33,7 +48,7 @@ skin_list = ["moonwalk.dae",
         "talk_b.dae",
         "walk.dae"]
 
-
+# add speed and doghingdirection
 actor_list = []
 for item in range(10):
     actor = Element("actor", name="actor"+str(item))
@@ -68,7 +83,13 @@ for item in range(10):
 
     plugin = Element("plugin", name="None", filename=plugin_path)
     speed = Element("speed")
-    speed.text = str(np.random.normal(1.34, 0.26, 1)[0])
+    speed.text = str(1.3)
+    socialForce = Element("socialForce")
+    socialForce.text = str(SocialForce)
+    desiredForce = Element("desiredForce")
+    desiredForce.text = str(DesiredForce)
+    obstacleForce = Element("obstacleForce")
+    obstacleForce.text = str(ObstacleForce)
     dodgingRight = Element("dodgingRight")
     dodgingRight.text = str(np.random.rand() < 0.5).lower()
     target = Element("target")
@@ -90,6 +111,9 @@ for item in range(10):
     ignore_obstacle.append(model_cafe)
     ignore_obstacle.append(model_ground_plane)
     plugin.append(speed)
+    plugin.append(socialForce)
+    plugin.append(desiredForce)
+    plugin.append(obstacleForce)
     plugin.append(dodgingRight)
     plugin.append(target)
     plugin.append(target_weight)
