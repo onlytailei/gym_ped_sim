@@ -14,6 +14,7 @@ from lxml import etree
 from lxml.etree import Element
 from copy import deepcopy
 import yaml
+import rospy
 
 rospack = rospkg.RosPack()
 #with open(rospack.get_path("actor_services")+"/src/forceFactors.yaml", 'r') as stream:
@@ -84,7 +85,7 @@ for item in range(2):
 
     animation = Element("animation", name="walking")
     animate_fn = Element("filename")
-    if item==0:
+    if (item==0) and (not rospy.get_param("TB3_AS_ACTOR")):
     	animate_fn.text = "stand.dae"
     else:
     	animate_fn.text = "walk.dae"
