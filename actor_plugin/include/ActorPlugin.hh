@@ -145,7 +145,7 @@ namespace gazebo
       bool GetVelCallback(actor_services::GetVel::Request&,
           actor_services::GetVel::Response&);
 
-      void CallPublisher(ignition::math::Vector3d, double);
+      void CallPublisher(ignition::math::Vector3d, ignition::math::Vector3d);
 
       /// \brief A ROS callbackqueue that helps process messages
       ros::CallbackQueue rosQueue;

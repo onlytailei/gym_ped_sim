@@ -283,7 +283,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   double distanceTraveled = (pose.Pos() -
       this->actor->WorldPose().Pos()).Length();
   
-  //CallPublisher(this->velocity, yaw_vel); 
+  CallPublisher(this->velocity, socialForce_); 
 
   this->actor->SetWorldPose(pose, false, false);
   this->actor->SetScriptTime(this->actor->ScriptTime() +
@@ -365,16 +365,18 @@ void ActorPlugin::QueueThread()
   }
 }
 
-//void ActorPlugin::CallPublisher(ignition::math::Vector3d vel_, double yaw_vel_)
-//{
-//geometry_msgs::Twist actor_vel_twist;
-//actor_vel_twist.linear.x = vel_.X();
-//actor_vel_twist.linear.y = vel_.Y();
-//actor_vel_twist.linear.z = vel_.Z();
-//actor_vel_twist.angular.z = yaw_vel_;
-//VelPublisher.publish(actor_vel_twist);   
-////ignition::math::Vector3d pose_  = this->actor->WorldPose().Pos();
-//}
+void ActorPlugin::CallPublisher(ignition::math::Vector3d vel_, ignition::math::Vector3d sf_)
+{
+geometry_msgs::Twist actor_vel_twist;
+actor_vel_twist.linear.x = vel_.X();
+actor_vel_twist.linear.y = vel_.Y();
+actor_vel_twist.linear.z = vel_.Z();
+actor_vel_twist.angular.x = sf_.X();
+actor_vel_twist.angular.y = sf_.Y();
+actor_vel_twist.angular.z = sf_.Z();
+VelPublisher.publish(actor_vel_twist);   
+//ignition::math::Vector3d pose_  = this->actor->WorldPose().Pos();
+}
 
 void ActorPlugin::get_ros_parameters(const ros::NodeHandlePtr rosNodeConstPtr){
   assert(rosNodeConstPtr->getParam("/SOCIAL_FORCE_FACTOR", socialForceFactor));
