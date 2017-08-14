@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
 <launch>
+    <rosparam command="load" file="$(find actor_services)/param/forceFactors_passing4.yaml" />    
     <node name="create_world" pkg="actor_services" type="passing_wall_4.py"/>
     
     <arg name="world_file"  default="$(find actor_services)/worlds/ped_world.world"/>
