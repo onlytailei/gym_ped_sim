@@ -59,6 +59,13 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   else
     this->target = ignition::math::Vector3d(0, -5, 1.2138);
 
+  // Read in the speed
+  if (_sdf->HasElement("speed"))
+    this->vMax = _sdf->Get<double>("speed");
+  else
+    // just take the average speed if not given
+    this->vMax = 1.2;
+
   // Add our own name to models we should ignore when avoiding obstacles.
   this->ignoreModels.push_back(this->actor->GetName());
 
@@ -252,6 +259,8 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   // Sum of all forces
   //ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce) + (this->obstacleForceFactor * obstacleForce);
   ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce);
+  
+  ROS_ERROR("%s, socialForce X: %lf, socialForce Y: %lf, desiredForce X: %lf, desiredForce Y: %lf, socialforcefactor: %lf, disiredfactor, %lf", this->actor->GetName().c_str(), socialForce_.X(), socialForce_.Y(), desiredForce.X(), desiredForce.Y(), socialForceFactor, desiredForceFactor);
 
   // Calculate new velocity
   //this->velocity = 0.5 * this->velocity + a * dt;
@@ -332,7 +341,6 @@ bool ActorPlugin::SetTargetCallback(actor_services::SetPose::Request& req, actor
   }
   return true;
 }
-
 
 bool ActorPlugin::GetVelCallback(actor_services::GetVel::Request& req, actor_services::GetVel::Response& res){
   res.x = this->velocity.X();
