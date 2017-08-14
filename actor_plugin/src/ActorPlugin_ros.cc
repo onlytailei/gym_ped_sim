@@ -38,7 +38,7 @@ GZ_REGISTER_MODEL_PLUGIN(ActorPlugin)
 
 #define WALKING_ANIMATION "walking"
 
-  /////////////////////////////////////////////////
+/////////////////////////////////////////////////
 ActorPlugin::ActorPlugin()
 {
 }
@@ -49,10 +49,8 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->actor = boost::dynamic_pointer_cast<physics::Actor>(_model);
   this->world = this->actor->GetWorld();
   this->start_location = this->actor->WorldPose().Pos();
-
   this->connections.push_back(event::Events::ConnectWorldUpdateBegin(
         std::bind(&ActorPlugin::OnUpdate, this, std::placeholders::_1)));
-
   this->velocity = 1.0;
 
   // Read in the social force factor
@@ -136,7 +134,6 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     this->trajectoryInfo.reset(new physics::TrajectoryInfo());
     this->trajectoryInfo->type = WALKING_ANIMATION;
     this->trajectoryInfo->duration = 1.0;
-
     this->actor->SetCustomTrajectory(this->trajectoryInfo);
   }
 
@@ -176,29 +173,6 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     std::thread(std::bind(&ActorPlugin::QueueThread, this));
 }
 
-/////////////////////////////////////////////////
-// TODO deprecated
-void ActorPlugin::ChooseNewTarget()
-{
-  ignition::math::Vector3d newTarget(this->target);
-  while ((newTarget - this->target).Length() < 2.0)
-  {
-    newTarget.X(ignition::math::Rand::DblUniform(-3, 3.5));
-    newTarget.Y(ignition::math::Rand::DblUniform(-10, 2));
-
-    for (unsigned int i = 0; i < this->world->ModelCount(); ++i)
-    {
-      double dist = (this->world->ModelByIndex(i)->WorldPose().Pos()
-          - newTarget).Length();
-      if (dist < 2.0)
-      {
-        newTarget = this->target;
-        break;
-      }
-    }
-  }
-  this->target = newTarget;
-}
 
 ignition::math::Vector3d ActorPlugin::CallActorVelClient(std::string actor_name_) const{
   ros::ServiceClient GetVelClient = this->rosNode->serviceClient<actor_services::GetVel>("/"+actor_name_+"/GetActorVelocity");
@@ -209,30 +183,6 @@ ignition::math::Vector3d ActorPlugin::CallActorVelClient(std::string actor_name_
   return ignition::math::Vector3d(getvel_srv.response.x, getvel_srv.response.y, 0);
 }
 
-ignition::math::Vector3d ActorPlugin::ObstacleForce(ignition::math::Pose3d &_pose) const
-{
-  ignition::math::Vector3d minDiff;
-  double minDistanceSquared = INFINITY;
-
-  for(unsigned int i = 0; i < this->world->ModelCount(); i++) {
-    physics::ModelPtr currentObstacle = this->world->ModelByIndex(i);
-
-    // Calculate for everything that is not an actor
-    if (currentObstacle->HasType(physics::Base::EntityType::ACTOR)) {
-      continue;
-    }
-
-    double distance = currentObstacle->WorldPose().Pos().Distance(_pose.Pos());
-    double distanceSquared = distance * distance;
-    if (distanceSquared < minDistanceSquared) {
-      minDistanceSquared = distanceSquared;
-      minDiff = distance;
-    }
-  }
-  double minDistance = sqrt(minDistanceSquared);
-  double forceAmount = exp(-minDistance / 0.8);
-  return forceAmount * minDiff.Normalize();
-}
 
 /////////////////////////////////////////////////
 // Compute social force on the actor.
@@ -274,6 +224,7 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
         continue;
       }
       ignition::math::Vector3d currentPose = currentAgent->WorldPose().Pos();
+      
       // Only compute for other agents in neighborhood range.
       double distance = currentPose.Distance(_pose.Pos());
       if (distance > neighborRange)
@@ -311,9 +262,6 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
       // compute angle theta (between interaction and position difference vector)
       double thisAngle = atan2(interactionDirection.Y(), interactionDirection.X());
-      // thisAngle.Normalize();
-      // otherAngle.Normalize();
-      
       ignition::math::Angle theta_angle(otherAngle-thisAngle);
       theta_angle.Normalize();
       double theta = theta_angle.Radian();
@@ -349,30 +297,6 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
     }
     //ROS_ERROR("======force: %lf======", force.X());
     return force;
-}
-
-/////////////////////////////////////////////////
-// TODO  A vary naive strategy need to be update
-void ActorPlugin::HandleObstacles(ignition::math::Vector3d &_pos)
-{
-  for (unsigned int i = 0; i < this->world->ModelCount(); ++i)
-  {
-    physics::ModelPtr model = this->world->ModelByIndex(i);
-    if (std::find(this->ignoreModels.begin(), this->ignoreModels.end(),
-          model->GetName()) == this->ignoreModels.end())
-    {
-      ignition::math::Vector3d offset = model->WorldPose().Pos() -
-        this->actor->WorldPose().Pos();
-      double modelDist = offset.Length();
-      if (modelDist < 2.0)
-      {
-        double invModelDist = this->obstacleWeight / modelDist;
-        offset.Normalize();
-        offset *= invModelDist;
-        _pos -= offset;
-      }
-    }
-  }
 }
 
 /////////////////////////////////////////////////
@@ -417,9 +341,6 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   ignition::math::Angle yaw = atan2(this->velocity.Y(), this->velocity.X()) + 0.5*PI - rpy.Z();
   yaw.Normalize();
 
-  
-  // Make sure the actor stays within bounds
-  
   // Rotate in place, instead of jumping.
   if (std::abs(yaw.Radian()) > IGN_DTOR(10))
   {
@@ -539,4 +460,78 @@ void ActorPlugin::QueueThread()
   //VelPublisher.publish(actor_vel_twist);   
   ////ignition::math::Vector3d pose_  = this->actor->WorldPose().Pos();
 //}
-  
+
+
+ 
+/////////////////////////////////////////////////
+// TODO  A vary naive strategy need to be update
+void ActorPlugin::HandleObstacles(ignition::math::Vector3d &_pos)
+{
+  for (unsigned int i = 0; i < this->world->ModelCount(); ++i)
+  {
+    physics::ModelPtr model = this->world->ModelByIndex(i);
+    if (std::find(this->ignoreModels.begin(), this->ignoreModels.end(),
+          model->GetName()) == this->ignoreModels.end())
+    {
+      ignition::math::Vector3d offset = model->WorldPose().Pos() -
+        this->actor->WorldPose().Pos();
+      double modelDist = offset.Length();
+      if (modelDist < 2.0)
+      {
+        double invModelDist = this->obstacleWeight / modelDist;
+        offset.Normalize();
+        offset *= invModelDist;
+        _pos -= offset;
+      }
+    }
+  }
+}
+
+//useless now
+ignition::math::Vector3d ActorPlugin::ObstacleForce(ignition::math::Pose3d &_pose) const
+{
+  ignition::math::Vector3d minDiff;
+  double minDistanceSquared = INFINITY;
+
+  for(unsigned int i = 0; i < this->world->ModelCount(); i++) {
+    physics::ModelPtr currentObstacle = this->world->ModelByIndex(i);
+
+    if (currentObstacle->HasType(physics::Base::EntityType::ACTOR)) {
+      continue;
+    }
+
+    double distance = currentObstacle->WorldPose().Pos().Distance(_pose.Pos());
+    double distanceSquared = distance * distance;
+    if (distanceSquared < minDistanceSquared) {
+      minDistanceSquared = distanceSquared;
+      minDiff = distance;
+    }
+  }
+  double minDistance = sqrt(minDistanceSquared);
+  double forceAmount = exp(-minDistance / 0.8);
+  return forceAmount * minDiff.Normalize();
+}
+
+/////////////////////////////////////////////////
+// deprecated
+void ActorPlugin::ChooseNewTarget()
+{
+  ignition::math::Vector3d newTarget(this->target);
+  while ((newTarget - this->target).Length() < 2.0)
+  {
+    newTarget.X(ignition::math::Rand::DblUniform(-3, 3.5));
+    newTarget.Y(ignition::math::Rand::DblUniform(-10, 2));
+
+    for (unsigned int i = 0; i < this->world->ModelCount(); ++i)
+    {
+      double dist = (this->world->ModelByIndex(i)->WorldPose().Pos()
+          - newTarget).Length();
+      if (dist < 2.0)
+      {
+        newTarget = this->target;
+        break;
+      }
+    }
+  }
+  this->target = newTarget;
+}
