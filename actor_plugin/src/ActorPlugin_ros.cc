@@ -171,29 +171,24 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
     double otherAngle = atan2(diffDirection.Y(), diffDirection.X());
     ignition::math::Angle angle_fov(otherAngle+0.5*PI-_pose.Rot().Yaw());
     angle_fov.Normalize();
-    //ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov);
     if (std::fabs(angle_fov.Radian()) > 0.5*depth_fov)
     {
       continue;
     }
 
-    // compute difference between both agents' velocity vectors
-    // ignition::math::Vector3d velDiff = _velocity - currentAgent->GetWorldLinearVel().Ign();
 
     ignition::math::Vector3d other_vel = CallActorVelClient(currentAgent->GetName());
     ignition::math::Vector3d velDiff = _velocity - other_vel;
-    if (this->actor->GetName()=="actor0"){
-      ROS_ERROR("%s, vel x: %lf, vel y: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y());
-      ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov.Radian());
-      ROS_ERROR("%s, vel x: %lf, vel y: %lf", currentAgent->GetName().c_str(), other_vel.X(), other_vel.Y());
-    }
+    //if (this->actor->GetName()=="actor0"){
+      //ROS_ERROR("%s, vel x: %lf, vel y: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y());
+      //ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov.Radian());
+      //ROS_ERROR("%s, vel x: %lf, vel y: %lf", currentAgent->GetName().c_str(), other_vel.X(), other_vel.Y());
+    //}
 
-    // compute interaction direction t_ij
     ignition::math::Vector3d interactionVector = sf_lambdaImportance * velDiff + diffDirection;
     double interactionLength = interactionVector.Length();
     ignition::math::Vector3d interactionDirection = interactionVector / interactionLength;
 
-    // compute angle theta (between interaction and position difference vector)
     double thisAngle = atan2(interactionDirection.Y(), interactionDirection.X());
     ignition::math::Angle theta_angle(otherAngle-thisAngle);
     theta_angle.Normalize();
@@ -201,10 +196,6 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
     // Get sign of theta.
     double thetaSign = (theta == 0.00) ? (0.0) : (theta / std::fabs(theta));
-    //if (this->actor->GetName()=="actor0"){
-    //	ROS_ERROR("%s, theta: %lf, this angle: %lf, other angle: %lf", this->actor->GetName().c_str(), theta, thisAngle, otherAngle);
-    //}
-    //ROS_ERROR("std abs theta: %lf, thetaSign: %d", std::abs(theta),thetaSign);
     // compute model parameter B = gamma * ||D||
     double B = sf_gamma * interactionLength;
 
@@ -216,11 +207,9 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
     // Dodge to the direction preset
     ignition::math::Vector3d interactionDirectionNormal;
     if (this->dodgingRight) {
-      //ROS_ERROR("%s, right", this->actor->GetName().c_str());
       interactionDirectionNormal = ignition::math::Vector3d(-interactionDirection.Y(), interactionDirection.X(), interactionDirection.Z());
     }
     else {
-      //ROS_ERROR("%s, left", this->actor->GetName().c_str());
       interactionDirectionNormal = ignition::math::Vector3d(interactionDirection.Y(), -interactionDirection.X(), interactionDirection.Z());
     }
 
@@ -245,34 +234,29 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   ignition::math::Vector3d pos = this->target - pose.Pos();
   ignition::math::Vector3d rpy = pose.Rot().Euler();
 
-
   // Get the desired force to waypoint: "I want to go there at full speed!"
   ignition::math::Vector3d desiredForce = pos.Normalize() * this->vMax;
-
-  //ignition::math::Vector3d obstacleForce = ObstacleForce(pose);
-  std::chrono::time_point<std::chrono::system_clock> start, end;
-  start = std::chrono::system_clock::now();
   ignition::math::Vector3d socialForce_ = SocialForce(pose, this->velocity);
-  end = std::chrono::system_clock::now();
-  std::chrono::duration<double> elapsed_seconds = end-start;
+  //ignition::math::Vector3d obstacleForce = ObstacleForce(pose);
+  
+  //std::chrono::time_point<std::chrono::system_clock> start, end;
+  //start = std::chrono::system_clock::now();
+  //end = std::chrono::system_clock::now();
+  //std::chrono::duration<double> elapsed_seconds = end-start;
   //ROS_ERROR("time count: %lf", elapsed_seconds.count());
-  // Sum of all forces
   //ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce) + (this->obstacleForceFactor * obstacleForce);
   ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce);
   
-  ROS_ERROR("%s, socialForce X: %lf, socialForce Y: %lf, desiredForce X: %lf, desiredForce Y: %lf, socialforcefactor: %lf, disiredfactor, %lf", this->actor->GetName().c_str(), socialForce_.X(), socialForce_.Y(), desiredForce.X(), desiredForce.Y(), socialForceFactor, desiredForceFactor);
+  //ROS_ERROR("%s, socialForce X: %lf, socialForce Y: %lf, desiredForce X: %lf, desiredForce Y: %lf, socialforcefactor: %lf, disiredfactor, %lf", this->actor->GetName().c_str(), socialForce_.X(), socialForce_.Y(), desiredForce.X(), desiredForce.Y(), socialForceFactor, desiredForceFactor);
 
-  // Calculate new velocity
   //this->velocity = 0.5 * this->velocity + a * dt;
   this->velocity = this->velocity*this->vel_param + a * dt;
 
-  // Don't exceed max speed
   double speed = this->velocity.Length();
   if (speed > this->vMax) {
     this->velocity = this->velocity.Normalize() * this->vMax;
   }
 
-  // Needs to be reworked!
   ignition::math::Angle yaw = atan2(this->velocity.Y(), this->velocity.X()) + 0.5*PI - rpy.Z();
   yaw.Normalize();
 
@@ -293,13 +277,12 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   pose.Rot() = ignition::math::Quaterniond(0.5*PI, 0, rpy.Z()+yaw.Radian());
   yaw_vel = yaw.Radian()/dt;
 
-  // Actually move
   pose.Pos() = pose.Pos() + this->velocity * dt;
   pose.Pos().Z(this->fixed_actor_height);
 
   double distanceTraveled = (pose.Pos() -
       this->actor->WorldPose().Pos()).Length();
-  //publish the speed
+  
   //CallPublisher(this->velocity, yaw_vel); 
 
   this->actor->SetWorldPose(pose, false, false);
