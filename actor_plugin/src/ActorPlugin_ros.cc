@@ -277,14 +277,14 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   pose.Rot() = ignition::math::Quaterniond(0.5*PI, 0, rpy.Z()+yaw.Radian());
   yaw_vel = yaw.Radian()/dt;
 
-  ROS_ERROR("%s, yaw: %lf", this->actor->GetName().c_str(), rpy.Z()+yaw.Radian());
+  //ROS_ERROR("%s, yaw: %lf", this->actor->GetName().c_str(), rpy.Z()+yaw.Radian()-0.5*PI);
   pose.Pos() = pose.Pos() + this->velocity * dt;
   pose.Pos().Z(this->fixed_actor_height);
 
   double distanceTraveled = (pose.Pos() -
       this->actor->WorldPose().Pos()).Length();
   
-  CallPublisher(this->velocity, socialForce_, rpy.Z()+yaw.Radian()); 
+  CallPublisher(this->velocity, socialForce_, rpy.Z()+yaw.Radian()-0.5*PI); 
   this->actor->SetWorldPose(pose, false, false);
   this->actor->SetScriptTime(this->actor->ScriptTime() +
       (distanceTraveled * this->animationFactor));
