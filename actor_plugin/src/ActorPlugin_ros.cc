@@ -179,11 +179,11 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
 
     ignition::math::Vector3d other_vel = CallActorVelClient(currentAgent->GetName());
     ignition::math::Vector3d velDiff = _velocity - other_vel;
-    if (this->actor->GetName()=="actor0"){
-      ROS_ERROR("%s, vel x: %lf, vel y: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y());
-      //ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov.Radian());
-      //ROS_ERROR("%s, vel x: %lf, vel y: %lf", currentAgent->GetName().c_str(), other_vel.X(), other_vel.Y());
-    }
+    //if (this->actor->GetName()=="actor0"){
+      //ROS_ERROR("%s, vel x: %lf, vel y: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y());
+      ////ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov.Radian());
+      ////ROS_ERROR("%s, vel x: %lf, vel y: %lf", currentAgent->GetName().c_str(), other_vel.X(), other_vel.Y());
+    //}
 
     ignition::math::Vector3d interactionVector = sf_lambdaImportance * velDiff + diffDirection;
     double interactionLength = interactionVector.Length();
