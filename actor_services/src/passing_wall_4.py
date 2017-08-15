@@ -10,6 +10,7 @@ Info:
 import random
 import numpy as np
 import rospkg
+import rospy
 from lxml import etree
 from lxml.etree import Element
 from copy import deepcopy
@@ -82,7 +83,7 @@ for item in range(4):
 
     animation = Element("animation", name="walking")
     animate_fn = Element("filename")
-    if item==0:
+    if (item==int(rospy.get_param("TB3_WITH_ACTOR")[-1])) and (not rospy.get_param("TB3_AS_ACTOR")):
     	animate_fn.text = "stand.dae"
     else:
     	animate_fn.text = "walk.dae"

@@ -1,8 +1,0 @@
-SocialForceFactor: 300.0
-#SocialForceFactor: 2000
-DesiredForceFactor: 100.0
-#DesiredForceFactor: 100.0
-ObstacleForceFactor: 0.0
-AnimationFactor: 5.0
-
-# best working to this point: 0.0000017, 2700.0, 0.0
