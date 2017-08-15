@@ -277,14 +277,14 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   pose.Rot() = ignition::math::Quaterniond(0.5*PI, 0, rpy.Z()+yaw.Radian());
   yaw_vel = yaw.Radian()/dt;
 
+  ROS_ERROR("%s, yaw: %lf", this->actor->GetName().c_str(), rpy.Z()+yaw.Radian());
   pose.Pos() = pose.Pos() + this->velocity * dt;
   pose.Pos().Z(this->fixed_actor_height);
 
   double distanceTraveled = (pose.Pos() -
       this->actor->WorldPose().Pos()).Length();
   
-  CallPublisher(this->velocity, socialForce_); 
-
+  CallPublisher(this->velocity, socialForce_, rpy.Z()+yaw.Radian()); 
   this->actor->SetWorldPose(pose, false, false);
   this->actor->SetScriptTime(this->actor->ScriptTime() +
       (distanceTraveled * this->animationFactor));
@@ -295,7 +295,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   tf::Transform tf_transform;
   tf_transform.setOrigin(tf::Vector3(pose.Pos().X(),pose.Pos().Y(),0));
   tf::Quaternion tf_q;
-  tf_q.setRPY(rpy.X(), rpy.Y(),rpy.Z());
+  tf_q.setRPY(rpy.X()-0.5*PI, rpy.Y(),rpy.Z()+yaw.Radian()-0.5*PI);
   tf_transform.setRotation(tf_q);
   br.sendTransform(tf::StampedTransform(tf_transform, ros::Time::now(), "default_world", this->actor->GetName()));
   ros::spinOnce();
@@ -365,7 +365,7 @@ void ActorPlugin::QueueThread()
   }
 }
 
-void ActorPlugin::CallPublisher(ignition::math::Vector3d vel_, ignition::math::Vector3d sf_)
+void ActorPlugin::CallPublisher(ignition::math::Vector3d vel_, ignition::math::Vector3d sf_, double yaw_)
 {
 geometry_msgs::Twist actor_vel_twist;
 actor_vel_twist.linear.x = vel_.X();
@@ -373,7 +373,7 @@ actor_vel_twist.linear.y = vel_.Y();
 actor_vel_twist.linear.z = vel_.Z();
 actor_vel_twist.angular.x = sf_.X();
 actor_vel_twist.angular.y = sf_.Y();
-actor_vel_twist.angular.z = sf_.Z();
+actor_vel_twist.angular.z = yaw_;
 VelPublisher.publish(actor_vel_twist);   
 //ignition::math::Vector3d pose_  = this->actor->WorldPose().Pos();
 }

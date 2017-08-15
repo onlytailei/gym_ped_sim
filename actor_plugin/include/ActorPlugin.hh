@@ -30,8 +30,6 @@
 #include <std_msgs/Float32MultiArray.h>
 #include <tf/transform_broadcaster.h>
 
-#include "ActorParam.h"
-
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/physics/physics.hh>
 #include <gazebo/util/system.hh>
@@ -145,7 +143,7 @@ namespace gazebo
       bool GetVelCallback(actor_services::GetVel::Request&,
           actor_services::GetVel::Response&);
 
-      void CallPublisher(ignition::math::Vector3d, ignition::math::Vector3d);
+      void CallPublisher(ignition::math::Vector3d, ignition::math::Vector3d, double);
 
       /// \brief A ROS callbackqueue that helps process messages
       ros::CallbackQueue rosQueue;
