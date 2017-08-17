@@ -180,9 +180,9 @@ ignition::math::Vector3d ActorPlugin::SocialForce(ignition::math::Pose3d &_pose,
     ignition::math::Vector3d other_vel = CallActorVelClient(currentAgent->GetName());
     ignition::math::Vector3d velDiff = _velocity - other_vel;
     //if (this->actor->GetName()=="actor0"){
-      //ROS_ERROR("%s, vel x: %lf, vel y: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y());
-      ////ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov.Radian());
-      ////ROS_ERROR("%s, vel x: %lf, vel y: %lf", currentAgent->GetName().c_str(), other_vel.X(), other_vel.Y());
+    //ROS_ERROR("%s, vel x: %lf, vel y: %lf", this->actor->GetName().c_str(), _velocity.X(), _velocity.Y());
+    ////ROS_ERROR("%s, angle fov: %lf", this->actor->GetName().c_str(), angle_fov.Radian());
+    ////ROS_ERROR("%s, vel x: %lf, vel y: %lf", currentAgent->GetName().c_str(), other_vel.X(), other_vel.Y());
     //}
 
     ignition::math::Vector3d interactionVector = sf_lambdaImportance * velDiff + diffDirection;
@@ -238,7 +238,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   ignition::math::Vector3d desiredForce = pos.Normalize() * this->vMax;
   ignition::math::Vector3d socialForce_ = SocialForce(pose, this->velocity);
   //ignition::math::Vector3d obstacleForce = ObstacleForce(pose);
-  
+
   //std::chrono::time_point<std::chrono::system_clock> start, end;
   //start = std::chrono::system_clock::now();
   //end = std::chrono::system_clock::now();
@@ -246,7 +246,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   //ROS_ERROR("time count: %lf", elapsed_seconds.count());
   //ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce) + (this->obstacleForceFactor * obstacleForce);
   ignition::math::Vector3d a = (this->socialForceFactor * socialForce_) + (this->desiredForceFactor * desiredForce);
-  
+
   //ROS_ERROR("%s, socialForce X: %lf, socialForce Y: %lf, desiredForce X: %lf, desiredForce Y: %lf, socialforcefactor: %lf, disiredfactor, %lf", this->actor->GetName().c_str(), socialForce_.X(), socialForce_.Y(), desiredForce.X(), desiredForce.Y(), socialForceFactor, desiredForceFactor);
 
   //this->velocity = 0.5 * this->velocity + a * dt;
@@ -273,7 +273,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   //pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
   //yaw_vel = yaw.Radian()/dt;
   //}
-  
+
   pose.Rot() = ignition::math::Quaterniond(0.5*PI, 0, rpy.Z()+yaw.Radian());
   yaw_vel = yaw.Radian()/dt;
 
@@ -283,7 +283,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 
   double distanceTraveled = (pose.Pos() -
       this->actor->WorldPose().Pos()).Length();
-  
+
   CallPublisher(this->velocity, socialForce_, rpy.Z()+yaw.Radian()-0.5*PI); 
   this->actor->SetWorldPose(pose, false, false);
   this->actor->SetScriptTime(this->actor->ScriptTime() +
@@ -367,15 +367,19 @@ void ActorPlugin::QueueThread()
 
 void ActorPlugin::CallPublisher(ignition::math::Vector3d vel_, ignition::math::Vector3d sf_, double yaw_)
 {
-geometry_msgs::Twist actor_vel_twist;
-actor_vel_twist.linear.x = vel_.X();
-actor_vel_twist.linear.y = vel_.Y();
-actor_vel_twist.linear.z = vel_.Z();
-actor_vel_twist.angular.x = sf_.X();
-actor_vel_twist.angular.y = sf_.Y();
-actor_vel_twist.angular.z = yaw_;
-VelPublisher.publish(actor_vel_twist);   
-//ignition::math::Vector3d pose_  = this->actor->WorldPose().Pos();
+
+  ignition::math::Angle force_direction = atan2(sf_.Y(), sf_.X()) - yaw_;
+  force_direction.Normalize();
+  
+  geometry_msgs::Twist actor_vel_twist;
+  actor_vel_twist.linear.x = vel_.X();
+  actor_vel_twist.linear.y = vel_.Y();
+  actor_vel_twist.linear.z = vel_.Z();
+  actor_vel_twist.angular.x = sf_.Length() * cos(force_direction.Radian());
+  actor_vel_twist.angular.y = sf_.Length() * sin(force_direction.Radian());
+  actor_vel_twist.angular.z = yaw_;
+  VelPublisher.publish(actor_vel_twist);   
+  //ignition::math::Vector3d pose_  = this->actor->WorldPose().Pos();
 }
 
 void ActorPlugin::get_ros_parameters(const ros::NodeHandlePtr rosNodeConstPtr){
