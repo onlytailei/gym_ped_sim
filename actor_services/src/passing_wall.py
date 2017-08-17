@@ -50,7 +50,7 @@ skin_list = ["moonwalk.dae",
         "talk_b.dae",
         "walk.dae"]
 
-distance = 8
+distance = 5
 startingPosition = dict()
 targetPosition = dict()
 speedOfActor = dict()
