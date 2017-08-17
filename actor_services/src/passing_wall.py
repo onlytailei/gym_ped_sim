@@ -17,22 +17,7 @@ import yaml
 import rospy
 
 rospack = rospkg.RosPack()
-#with open(rospack.get_path("actor_services")+"/src/forceFactors.yaml", 'r') as stream:
-    #try:
-        #factorData = yaml.load(stream)
-    #except yaml.YAMLError as exc:
-        #print(exc)
 
-#SocialForce = factorData["SocialForceFactor"]
-#DesiredForce = factorData["DesiredForceFactor"]
-#ObstacleForce = factorData["ObstacleForceFactor"]
-#AnimationFactor = factorData["AnimationFactor"]
-#print(SocialForce)
-#print(DesiredForce)
-#print(ObstacleForce)
-#print(AnimationFactor)
-
-#rospy.init_node('creat_world', anonymous=True)
 plugin_pkg_path = rospack.get_path("actor_plugin")
 plugin_path = plugin_pkg_path + "/lib/libactorplugin_ros.so"
 actor_pkg_path = rospack.get_path("actor_services")

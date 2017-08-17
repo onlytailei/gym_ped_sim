@@ -14,24 +14,10 @@ from lxml import etree
 from lxml.etree import Element
 from copy import deepcopy
 import yaml
+import rospy
 
 rospack = rospkg.RosPack()
-with open(rospack.get_path("actor_services")+"/src/forceFactors.yaml", 'r') as stream:
-    try:
-        factorData = yaml.load(stream)
-    except yaml.YAMLError as exc:
-        print(exc)
 
-SocialForce = factorData["SocialForceFactor"]
-DesiredForce = factorData["DesiredForceFactor"]
-ObstacleForce = factorData["ObstacleForceFactor"]
-AnimationFactor = factorData["AnimationFactor"]
-print(SocialForce)
-print(DesiredForce)
-print(ObstacleForce)
-print(AnimationFactor)
-
-#rospy.init_node('creat_world', anonymous=True)
 plugin_pkg_path = rospack.get_path("actor_plugin")
 plugin_path = plugin_pkg_path + "/lib/libactorplugin_ros.so"
 actor_pkg_path = rospack.get_path("actor_services")
@@ -54,15 +40,13 @@ targetPosition = dict()
 dodgingDirection = dict()
 speedOfActor = dict()
 
-startingPosition[0] = (-4, 0)
-targetPosition[0] = (4, 0)
+startingPosition[0] = (-2, 0)
+targetPosition[0] = (2, 0)
 speedOfActor[0] = 0.5
-dodgingDirection[0] = "right"
 
-startingPosition[1] = (-8, 0)
-targetPosition[1] = (8, 0)
-speedOfActor[1] = 1.9
-dodgingDirection[1] = "right"
+startingPosition[1] = (-5, 0)
+targetPosition[1] = (5, 0)
+speedOfActor[1] = 1.2
 
 
 actor_list = []
@@ -87,7 +71,10 @@ for item in range(2):
 
     animation = Element("animation", name="walking")
     animate_fn = Element("filename")
-    animate_fn.text = "walk.dae"
+    if (item==int(rospy.get_param("TB3_WITH_ACTOR")[-1])) and (not rospy.get_param("TB3_AS_ACTOR")):
+    	animate_fn.text = "stand.dae"
+    else:
+    	animate_fn.text = "walk.dae"
     interpolate_x = Element("interpolate_x")
     interpolate_x.text = "true"
     animate_scale = Element("scale")
@@ -100,27 +87,10 @@ for item in range(2):
     plugin = Element("plugin", name="None", filename=plugin_path)
     speed = Element("speed")
     speed.text = str(speedOfActor[item])
-    socialForce = Element("socialForce")
-    socialForce.text = str(SocialForce)
-    desiredForce = Element("desiredForce")
-    desiredForce.text = str(DesiredForce)
-    obstacleForce = Element("obstacleForce")
-    obstacleForce.text = str(ObstacleForce)
-    dodgingRight = Element("dodgingRight")
-    dodgingRight = Element("dodgingRight")
-    dodgingRight.text = str(dodgingDirection[item] == "right").lower()
     target = Element("target")
     x = str(targetPosition[item][0])
     y = str(targetPosition[item][1])
     target.text =  x+" "+y+" "+"1.02"
-    target_weight = Element("target_weight")
-    target_weight.text = "1.5"
-    obstacle_weight = Element("obstacle_weight")
-    obstacle_weight.text = "1.5"
-    animation_factor = Element("animation_factor")
-    #speed_ = str(speedOfActor[item])
-    speed_ = str(AnimationFactor)
-    animation_factor.text = speed_
     ignore_obstacle = Element("ignore_obstacles")
     model_cafe = Element("model")
     model_cafe.text = "caffe"
@@ -129,14 +99,7 @@ for item in range(2):
     ignore_obstacle.append(model_cafe)
     ignore_obstacle.append(model_ground_plane)
     plugin.append(speed)
-    plugin.append(socialForce)
-    plugin.append(desiredForce)
-    plugin.append(obstacleForce)
     plugin.append(target)
-    plugin.append(dodgingRight)
-    plugin.append(target_weight)
-    plugin.append(obstacle_weight)
-    plugin.append(animation_factor)
     plugin.append(ignore_obstacle)
     actor.append(plugin)
 
