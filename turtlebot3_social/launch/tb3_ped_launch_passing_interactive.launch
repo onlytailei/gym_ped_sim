@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<launch>
+    <rosparam command="load" file="$(find turtlebot3_social)/param/forceFactors.yaml" />   
+    <param name="TB3_AS_ACTOR" type="bool" value="true" /> 
+    <node name="create_world" pkg="actor_services" type="passing_wall.py"/>
+    <node name="tfodom2defaultworld" pkg="turtlebot3_social" type="tfodom2defaultworld.py"/>
+
+    <arg name="world_file"  default="$(find actor_services)/worlds/ped_world.world"/>
+    <arg name="gui" default="false"/>
+    <arg name="rviz" default="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <!-- set use_sim_time flag -->
+    <group if="$(arg use_sim_time)">
+        <param name="/use_sim_time" value="true" />
+    </group>
+
+
+    <node name="gazebo" pkg="gazebo_ros" type="gzserver" output="screen"
+        args="$(arg world_file)" />
+    
+    <group if="$(arg rviz)">
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find actor_services)/rviz/tf_show.rviz"/>
+    	<!-- <include file="$(find turtlebot3_social)/launch/turtlebot3_gazebo_rviz.launch" /> -->
+    </group>
+
+    <!-- start gazebo client -->
+    <group if="$(arg gui)">
+        <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen"/>
+    </group>
+
+    <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle]"/>
+    <arg name="x_pos" default="0.0"/>
+    <arg name="y_pos" default="0.0"/>
+    <arg name="z_pos" default="0.0"/>
+
+    <param name="robot_description" command="$(find xacro)/xacro.py $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model turtlebot3_burger -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+    <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch" />
+    <node name="data_collection" pkg="data_collection" type="data_collection_node" />
+</launch>

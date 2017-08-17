@@ -160,6 +160,7 @@ namespace gazebo
       double desiredForceFactor;
       double obstacleForceFactor;
       double maxSpeed;
+      double maxAngleUpdate;
       bool dodgingRight;
       bool tb3_as_actor;
       std::string tb3_name;

@@ -257,25 +257,22 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
     this->velocity = this->velocity.Normalize() * this->vMax;
   }
 
-  ignition::math::Angle yaw = atan2(this->velocity.Y(), this->velocity.X()) + 0.5*PI - rpy.Z();
-  yaw.Normalize();
-
+  ignition::math::Angle yaw_update = atan2(this->velocity.Y(), this->velocity.X()) + 0.5*PI - rpy.Z();
+  yaw_update.Normalize();
+  
+  double temp_vel = this->velocity.Length();
+  
   // Rotate in place, instead of jumping.
-  //if (std::abs(yaw.Radian()) > IGN_DTOR(10))
-  //{
-  //this->velocity = this->velocity*0.5;
-  //pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
-  //yaw_vel = yaw.Radian()/dt;
-  //}
-  //else
-  //{
-  //// pose.Pos() += this->velocity * dt;
-  //pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
-  //yaw_vel = yaw.Radian()/dt;
-  //}
+  if (std::fabs(yaw_update.Radian()) > (this->maxAngleUpdate/180.0 * PI)){
+    double yaw_update_sign = yaw_update.Radian()/std::fabs(yaw_update.Radian());
+    yaw_update = this->maxAngleUpdate/180 * PI*yaw_update_sign;  
+  }
+  ignition::math::Angle new_yaw = rpy.Z()+yaw_update.Radian()-0.5*PI;
+  this->velocity.X() = temp_vel * cos(yaw_update.Radian()) * cos(new_yaw.Radian());
+  this->velocity.Y() = temp_vel * cos(yaw_update.Radian()) * sin(new_yaw.Radian());
 
-  pose.Rot() = ignition::math::Quaterniond(0.5*PI, 0, rpy.Z()+yaw.Radian());
-  yaw_vel = yaw.Radian()/dt;
+  pose.Rot() = ignition::math::Quaterniond(0.5*PI, 0, new_yaw.Radian()+0.5*PI);
+  yaw_vel = yaw_update.Radian()/dt;
 
   //ROS_ERROR("%s, yaw: %lf", this->actor->GetName().c_str(), rpy.Z()+yaw.Radian()-0.5*PI);
   pose.Pos() = pose.Pos() + this->velocity * dt;
@@ -284,7 +281,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   double distanceTraveled = (pose.Pos() -
       this->actor->WorldPose().Pos()).Length();
 
-  CallPublisher(this->velocity, socialForce_, rpy.Z()+yaw.Radian()-0.5*PI); 
+  CallPublisher(this->velocity, socialForce_, new_yaw.Radian()); 
   this->actor->SetWorldPose(pose, false, false);
   this->actor->SetScriptTime(this->actor->ScriptTime() +
       (distanceTraveled * this->animationFactor));
@@ -295,7 +292,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   tf::Transform tf_transform;
   tf_transform.setOrigin(tf::Vector3(pose.Pos().X(),pose.Pos().Y(),0));
   tf::Quaternion tf_q;
-  tf_q.setRPY(rpy.X()-0.5*PI, rpy.Y(),rpy.Z()+yaw.Radian()-0.5*PI);
+  tf_q.setRPY(rpy.X()-0.5*PI, rpy.Y(), new_yaw.Radian());
   tf_transform.setRotation(tf_q);
   br.sendTransform(tf::StampedTransform(tf_transform, ros::Time::now(), "default_world", this->actor->GetName()));
   ros::spinOnce();
@@ -378,12 +375,11 @@ void ActorPlugin::CallPublisher(ignition::math::Vector3d vel_, ignition::math::V
   actor_vel_twist.angular.x = sf_.Length() * cos(force_direction.Radian());
   actor_vel_twist.angular.y = sf_.Length() * sin(force_direction.Radian());
   
-  //if (this->actor->GetName()=="actor0"){
-  //   ROS_ERROR("%s, force x: %lf, force y: %lf", this->actor->GetName().c_str(), actor_vel_twist.angular.x, actor_vel_twist.angular.y);
-  //}
+  if (this->actor->GetName()=="actor2"){
+    ROS_ERROR("%s, force x: %lf, force y: %lf", this->actor->GetName().c_str(), actor_vel_twist.angular.x, actor_vel_twist.angular.y);
+  }
   actor_vel_twist.angular.z = yaw_;
   VelPublisher.publish(actor_vel_twist);   
-  //ignition::math::Vector3d pose_  = this->actor->WorldPose().Pos();
 }
 
 void ActorPlugin::get_ros_parameters(const ros::NodeHandlePtr rosNodeConstPtr){
@@ -391,6 +387,7 @@ void ActorPlugin::get_ros_parameters(const ros::NodeHandlePtr rosNodeConstPtr){
   assert(rosNodeConstPtr->getParam("/DESIRED_FORCE_FACTOR", desiredForceFactor));
   assert(rosNodeConstPtr->getParam("/OBSTACLE_FORCE_FACTOR", obstacleForceFactor));
   assert(rosNodeConstPtr->getParam("/MAX_SPEED", maxSpeed));
+  assert(rosNodeConstPtr->getParam("/MAX_ANGLE_UPDATE", maxAngleUpdate));
   assert(rosNodeConstPtr->getParam("/DODGING_RIGHT", dodgingRight));
   assert(rosNodeConstPtr->getParam("/TB3_AS_ACTOR", tb3_as_actor));
   assert(rosNodeConstPtr->getParam("/TB3_NAME", tb3_name));
