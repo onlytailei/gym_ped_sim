@@ -28,7 +28,7 @@ class SAVE_DATA2H5PY(object):
         self.save_count = rospy.get_param("/SAVE_COUNT")
         self.rate = rospy.Rate(self.save_rate)
         self.bridge = CvBridge()
-        time.sleep(5)
+        time.sleep(15)
     def save_data(self):
         count_ = 0
         while (not rospy.is_shutdown()) and (count_<self.save_count):
