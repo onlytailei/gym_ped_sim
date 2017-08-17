@@ -377,7 +377,10 @@ void ActorPlugin::CallPublisher(ignition::math::Vector3d vel_, ignition::math::V
   actor_vel_twist.linear.z = vel_.Z();
   actor_vel_twist.angular.x = sf_.Length() * cos(force_direction.Radian());
   actor_vel_twist.angular.y = sf_.Length() * sin(force_direction.Radian());
-  ROS_ERROR("%s, force x: %lf, force y: %lf", this->actor->GetName().c_str(), actor_vel_twist.angular.x, actor_vel_twist.angular.y);
+  
+  //if (this->actor->GetName()=="actor0"){
+  //   ROS_ERROR("%s, force x: %lf, force y: %lf", this->actor->GetName().c_str(), actor_vel_twist.angular.x, actor_vel_twist.angular.y);
+  //}
   actor_vel_twist.angular.z = yaw_;
   VelPublisher.publish(actor_vel_twist);   
   //ignition::math::Vector3d pose_  = this->actor->WorldPose().Pos();
