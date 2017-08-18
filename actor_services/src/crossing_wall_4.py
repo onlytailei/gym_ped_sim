@@ -39,20 +39,20 @@ startingPosition = dict()
 targetPosition = dict()
 speedOfActor = dict()
 
-startingPosition[0] = (-3, 0)
-targetPosition[0] = (3, 0)
+startingPosition[0] = (-2, 0)
+targetPosition[0] = (2, 0)
 speedOfActor[0] = 0.8
 
-startingPosition[1] = (-5, 0)
-targetPosition[1] = (5, 0)
+startingPosition[1] = (-4, 0)
+targetPosition[1] = (4, 0)
 speedOfActor[1] = 1.2
 
-startingPosition[2] = (0, 3)
-targetPosition[2] = (0, -3)
+startingPosition[2] = (0, 2)
+targetPosition[2] = (0, -2)
 speedOfActor[2] = 0.7
 
-startingPosition[3] = (0, 5)
-targetPosition[3] = (0, -5)
+startingPosition[3] = (0, 4)
+targetPosition[3] = (0, -4)
 speedOfActor[3] = 1.1
 
 
