@@ -35,21 +35,29 @@ skin_list = ["moonwalk.dae",
         "talk_b.dae",
         "walk.dae"]
 
-distance = 6
 startingPosition = dict()
 targetPosition = dict()
 speedOfActor = dict()
-startingPosition[0] = (0, distance/2)
-targetPosition[0] = (0, -distance/2)
-speedOfActor[0] = 1.2
 
-startingPosition[1] = (-distance/2, 0)
-targetPosition[1] = (distance/2, 0)
+startingPosition[0] = (-3, 0)
+targetPosition[0] = (3, 0)
+speedOfActor[0] = 0.8
+
+startingPosition[1] = (-5, 0)
+targetPosition[1] = (5, 0)
 speedOfActor[1] = 1.2
+
+startingPosition[2] = (0, 3)
+targetPosition[2] = (0, -3)
+speedOfActor[2] = 0.7
+
+startingPosition[3] = (0, 5)
+targetPosition[3] = (0, -5)
+speedOfActor[3] = 1.1
 
 
 actor_list = []
-for item in range(2):
+for item in range(4):
     actor = Element("actor", name="actor"+str(item))
 
     pose = Element("pose")
