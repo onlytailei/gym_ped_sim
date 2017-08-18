@@ -2,10 +2,10 @@
 
 <launch>
     <rosparam command="load" file="$(find turtlebot3_social)/param/forceFactors_overtaking.yaml" />    
-    <param name="TB3_WITH_ACTOR" type="string" value="actor0" /> 
+    <param name="TB3_WITH_ACTOR" type="string" value="actor1" /> 
     <param name="BASE_WORLD" type="string" value="empty.world" /> 
-    <param name="SAVE_FILE" type="string" value="/root/dataset/passing_wall_4" /> 
-    <node name="create_world" pkg="actor_services" type="overtaking_wall.py"/>
+    <param name="SAVE_FILE" type="string" value="/root/dataset/overtaking_4_a1" /> 
+    <node name="create_world" pkg="actor_services" type="overtaking_wall_4.py"/>
 
     <node name="tfodom2actor" pkg="turtlebot3_social" type="tfodom2actor.py"/>
 
