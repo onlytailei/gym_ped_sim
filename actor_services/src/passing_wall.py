@@ -22,7 +22,9 @@ plugin_pkg_path = rospack.get_path("actor_plugin")
 plugin_path = plugin_pkg_path + "/lib/libactorplugin_ros.so"
 actor_pkg_path = rospack.get_path("actor_services")
 
-tree_ = etree.parse(actor_pkg_path+'/worlds/corridor4m.world')
+world_name = rospy.get_param("BASE_WORLD")
+
+tree_ = etree.parse(actor_pkg_path+'/worlds/'+world_name)
 world_ = tree_.getroot().getchildren()[0]
 
 skin_list = ["moonwalk.dae",
