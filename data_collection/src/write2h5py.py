@@ -20,6 +20,7 @@ class SAVE_DATA2H5PY(object):
     def __init__(self):
         rospy.init_node('saving_data_h5py', log_level=rospy.INFO)
         rospy.wait_for_service("/data_collection/data_collection_service")
+        rospy.wait_for_service("/gazebo/get_model_state")
         self.service_client = rospy.ServiceProxy(
                 "/data_collection/data_collection_service",
                 DataCollectionService)
@@ -47,10 +48,10 @@ class SAVE_DATA2H5PY(object):
         h5_file_['x_force'] = velforce.angular.x
         h5_file_['y_force'] = velforce.angular.y 
         h5_file_['yaw'] = velforce.angular.y 
-        #rospy.loginfo("=======force %lf, %lf", velforce.angular.x, velforce.angular.y)
+        rospy.logerr("=======force %lf, %lf", velforce.angular.x, velforce.angular.y)
 
         scan = all_msgs_.scan.ranges
-        h5_file_['ranges'] = velforce.angular.y 
+        h5_file_['ranges'] = np.array(scan) 
 
         rgb_image = self.bridge.imgmsg_to_cv2(all_msgs_.rgb_image, "rgb8")
         h5_file_['rbg_image'] = rgb_image
