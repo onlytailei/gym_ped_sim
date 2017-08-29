@@ -60,16 +60,14 @@ Visualization Manager:
           Value: true
         actor1:
           Value: true
-        actor2:
-          Value: true
-        actor3:
-          Value: true
         base_footprint:
-          Value: false
+          Value: true
         default_world:
           Value: false
         odom:
           Value: false
+        target:
+          Value: true
       Marker Scale: 5
       Name: TF
       Show Arrows: false
@@ -78,14 +76,13 @@ Visualization Manager:
       Tree:
         default_world:
           actor0:
-            odom:
-              base_footprint:
-                {}
+            {}
           actor1:
             {}
-          actor2:
-            {}
-          actor3:
+          odom:
+            base_footprint:
+              {}
+          target:
             {}
       Update Interval: 0
       Value: true

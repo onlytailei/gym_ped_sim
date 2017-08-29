@@ -2,7 +2,9 @@
 
 <launch>
     <rosparam command="load" file="$(find turtlebot3_social)/param/forceFactors.yaml" />   
+    <rosparam command="load" file="$(find gym_style_gazebo)/param/robot_start.yaml" />   
     <param name="TB3_AS_ACTOR" type="bool" value="true" /> 
+    <param name="BASE_WORLD" type="string" value="empty.world" /> 
     <node name="create_world" pkg="actor_services" type="passing_wall.py"/>
     <node name="tfodom2defaultworld" pkg="turtlebot3_social" type="tfodom2defaultworld.py"/>
 
@@ -21,7 +23,6 @@
     
     <group if="$(arg rviz)">
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find actor_services)/rviz/tf_show.rviz"/>
-    	<!-- <include file="$(find turtlebot3_social)/launch/turtlebot3_gazebo_rviz.launch" /> -->
     </group>
 
     <!-- start gazebo client -->
@@ -37,6 +38,8 @@
     <param name="robot_description" command="$(find xacro)/xacro.py $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
 
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model turtlebot3_burger -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
-    <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch" />
-    <node name="data_collection" pkg="data_collection" type="data_collection_node" />
+
+    <!--<include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch" />-->
+    
+    <node name="main_service" pkg="gym_style_gazebo" type="task_env_service">
 </launch>
