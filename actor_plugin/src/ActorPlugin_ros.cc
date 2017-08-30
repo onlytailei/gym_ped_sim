@@ -297,8 +297,6 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   //tf_transform.setRotation(tf_q);
   //br.sendTransform(tf::StampedTransform(tf_transform, ros::Time::now(), "default_world", this->actor->GetName()));
   //ros::spinOnce();
-  
-  //std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
 
   double distance = pose.Pos().Distance(this->target);
 
