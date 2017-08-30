@@ -29,6 +29,7 @@
 #include "ActorPlugin.hh"
 #include <ros/console.h>
 #include <iostream>
+#include <thread>
 #include <string>
 #include <ros/console.h> //roslogging
 
@@ -288,14 +289,16 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   this->lastUpdate = _info.simTime;
 
   // ros stuff
-  static tf::TransformBroadcaster br;
-  tf::Transform tf_transform;
-  tf_transform.setOrigin(tf::Vector3(pose.Pos().X(),pose.Pos().Y(),0));
-  tf::Quaternion tf_q;
-  tf_q.setRPY(rpy.X()-0.5*PI, rpy.Y(), new_yaw.Radian());
-  tf_transform.setRotation(tf_q);
-  br.sendTransform(tf::StampedTransform(tf_transform, ros::Time::now(), "default_world", this->actor->GetName()));
-  ros::spinOnce();
+  //static tf::TransformBroadcaster br;
+  //tf::Transform tf_transform;
+  //tf_transform.setOrigin(tf::Vector3(pose.Pos().X(),pose.Pos().Y(),0));
+  //tf::Quaternion tf_q;
+  //tf_q.setRPY(rpy.X()-0.5*PI, rpy.Y(), new_yaw.Radian());
+  //tf_transform.setRotation(tf_q);
+  //br.sendTransform(tf::StampedTransform(tf_transform, ros::Time::now(), "default_world", this->actor->GetName()));
+  //ros::spinOnce();
+  
+  //std::this_thread::sleep_for(std::chrono::milliseconds(100)); 
 
   double distance = pose.Pos().Distance(this->target);
 
@@ -306,6 +309,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
     this->target = temp;
     pos = this->target - pose.Pos();
   }
+  
 }
 
 // Set target position service callback. Response is the target position right now
