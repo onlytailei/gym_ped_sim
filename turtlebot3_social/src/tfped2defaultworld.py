@@ -10,25 +10,21 @@ Info:
 import rospy
 import tf
 import numpy as np
+from gazebo_msgs.msg import ModelStates
 
 class MountTB2Ped(object):
     
     def __init__(self):
-        #self.model_sub = rospy.Subscriber("/gazebo/model_states", ModelStates, self.callback)
         self.br = tf.TransformBroadcaster()
-        #self.model_set = rospy.Publisher("/gazebo/set_model_state", ModelState,queue_size=1) 
-    
-        #self.tb3modelstate = ModelState()
-        #self.tb3modelstate.model_name="turtlebot3_burger"
-        
-        #self.actor_name = rospy.get_param("TB3_WITH_ACTOR")
+        self.actor_name = rospy.get_param("TB3_WITH_ACTOR")
         self.actor_number = rospy.get_param("ACTOR_NUMBER")
         self.robot_pose = None
         self.robot_quat = None
+        self.model_sub = rospy.Subscriber("/gazebo/model_states", ModelStates, self.callback)
+        
 
     def callback(self, data):
-        #tb3_idx = data.name.index("turtlebot3_burger")
-        for item in xrange(self.actor_numer):
+        for item in xrange(self.actor_number):
             actor_idx_ = data.name.index(self.actor_name[:-1]+str(item))
             actor_pose_ = data.pose[actor_idx_].position
             actor_quat_ = self.quat_trans(data.pose[actor_idx_].orientation)
@@ -37,7 +33,7 @@ class MountTB2Ped(object):
                     rospy.Time.now(),
                     self.actor_name[:-1]+str(item),
                     "default_world")
-
+            print self.actor_name[:-1]+str(item)
             #if item == str(self.actor_name[-1]):
                 #self.robot_pose = actor_pose_
                 #self.robot_quat = actor_quat_
