@@ -10,7 +10,7 @@ include_directories(${roscpp_INCLUDE_DIRS})
 include_directories(${actor_services_INCLUDE_DIRS})
 include_directories(${tf_INCLUDE_DIRS})
 include_directories(${std_msgs_INCLUDE_DIRS})
-
+include_directories(/user/include/sdformat-5.2)
 include_directories(./include)
 find_package(gazebo REQUIRED)
 include_directories(${GAZEBO_INCLUDE_DIRS})
