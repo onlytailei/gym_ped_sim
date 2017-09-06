@@ -41,8 +41,8 @@ distance = 5
 startingPosition = dict()
 targetPosition = dict()
 speedOfActor = dict()
-startingPosition[0] = (-1, 0)
-targetPosition[0] = (4, 0)
+startingPosition[0] = (-1.0, 0)
+targetPosition[0] = (4.0, 0)
 speedOfActor[0] = 1.00
 
 startingPosition[1] = (distance/2, 0)
