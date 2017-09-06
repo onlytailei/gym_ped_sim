@@ -37,17 +37,16 @@ skin_list = ["moonwalk.dae",
         "talk_b.dae",
         "walk.dae"]
 
+distance = 6.0
 startingPosition = dict()
 targetPosition = dict()
-dodgingDirection = dict()
 speedOfActor = dict()
+startingPosition[0] = (0.0, distance/2)
+targetPosition[0] = (0.0, -distance/2)
+speedOfActor[0] = 1.2
 
-startingPosition[0] = (-2.0, 0)
-targetPosition[0] = (2.0, 0)
-speedOfActor[0] = 0.5
-
-startingPosition[1] = (-5.0, 0)
-targetPosition[1] = (5.0, 0)
+startingPosition[1] = (-distance/2, 0.0)
+targetPosition[1] = (distance/2, 0.0)
 speedOfActor[1] = 1.2
 
 
