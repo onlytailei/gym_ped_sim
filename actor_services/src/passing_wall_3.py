@@ -41,8 +41,8 @@ startingPosition = dict()
 targetPosition = dict()
 speedOfActor = dict()
 
-startingPosition = {0:(-3,-0.5), 1:(-2.5,0.5), 2:(3, -0.5), 3:(2.5,0.5)}
-targetPosition = {0: (2.5,-0.5), 1:(3,0.5),   2:(-2.5, -0.5), 3:(-3,0.5)}
+startingPosition = {0:(-3.0,-0.5), 1:(-2.5,0.5), 2:(3.0, -0.5), 3:(2.5,0.5)}
+targetPosition = {0: (2.5,-0.5), 1:(3.0,0.5),  2:(-2.5, -0.5), 3:(-3.0,0.5)}
 speedOfActor = {0:1.0,1:0.9,2:1.1,3:1.2}
 #for item in range(4):
 #    speedOfActor[item] = 1.00
@@ -56,6 +56,8 @@ for item in range(3):
     #randomly generate position to pose text
     x = str(startingPosition[item][0])
     y = str(startingPosition[item][1])
+    rospy.set_param('TARGET_X_ACTOR_'+str(item), float(x))
+    rospy.set_param('TARGET_Y_ACTOR_'+str(item), float(y))
     pose.text = x+" "+y+" "+"1.02 0 0 0"
     actor.append(pose)
 
@@ -89,8 +91,6 @@ for item in range(3):
     target = Element("target")
     x = str(targetPosition[item][0])
     y = str(targetPosition[item][1])
-    rospy.set_param('TARGET_X_ACTOR_'+str(item), float(x))
-    rospy.set_param('TARGET_Y_ACTOR_'+str(item), float(y))
     target.text =  x+" "+y+" "+"1.02"
     ignore_obstacle = Element("ignore_obstacles")
     model_cafe = Element("model")

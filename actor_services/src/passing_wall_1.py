@@ -58,6 +58,8 @@ for item in range(1):
     #randomly generate position to pose text
     x = str(startingPosition[item][0])
     y = str(startingPosition[item][1])
+    rospy.set_param('TARGET_X_ACTOR_'+str(item), float(x))
+    rospy.set_param('TARGET_Y_ACTOR_'+str(item), float(y))
     pose.text = x+" "+y+" "+"1.02 0 0 0"
     actor.append(pose)
 
@@ -91,8 +93,6 @@ for item in range(1):
     target = Element("target")
     x = str(targetPosition[item][0])
     y = str(targetPosition[item][1])
-    rospy.set_param('TARGET_X_ACTOR_'+str(item), float(x))
-    rospy.set_param('TARGET_Y_ACTOR_'+str(item), float(y))
     target.text =  x+" "+y+" "+"1.02"
     ignore_obstacle = Element("ignore_obstacles")
     model_cafe = Element("model")
