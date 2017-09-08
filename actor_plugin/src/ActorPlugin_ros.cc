@@ -369,7 +369,7 @@ void ActorPlugin::CallPublisher(
     double yaw_)
 {
 
-  ignition::math::Angle force_direction = atan2(sf_.Y(), sf_.X()) - yaw_;
+  ignition::math::Angle force_direction = atan2(af_.Y(), af_.X()) - yaw_;
   force_direction.Normalize();
   
   geometry_msgs::Twist actor_vel_twist;
@@ -379,8 +379,8 @@ void ActorPlugin::CallPublisher(
   actor_vel_twist.angular.x = af_.Length() * cos(force_direction.Radian());
   actor_vel_twist.angular.y = af_.Length() * sin(force_direction.Radian());
   
-  //if (this->actor->GetName()=="actor2"){
-  //  ROS_ERROR("%s, force x: %lf, force y: %lf", this->actor->GetName().c_str(), actor_vel_twist.angular.x, actor_vel_twist.angular.y);
+  //if (this->actor->GetName()=="actor1"){
+    //ROS_ERROR("%s, force x: %lf, force y: %lf", this->actor->GetName().c_str(), actor_vel_twist.angular.x, actor_vel_twist.angular.y);
   //}
   actor_vel_twist.angular.z = yaw_;
   VelPublisher.publish(actor_vel_twist);   
