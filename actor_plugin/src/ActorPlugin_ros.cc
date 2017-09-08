@@ -280,7 +280,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   double distanceTraveled = (pose.Pos() -
       this->actor->WorldPose().Pos()).Length();
 
-  CallPublisher(this->velocity, a, socialForce_, new_yaw.Radian()); 
+  CallPublisher(this->velocity, a, pos.Normalize(), new_yaw.Radian()); 
   this->actor->SetWorldPose(pose, false, false);
   this->actor->SetScriptTime(this->actor->ScriptTime() +
       (distanceTraveled * this->animationFactor));
@@ -365,7 +365,7 @@ void ActorPlugin::QueueThread()
 void ActorPlugin::CallPublisher(
     ignition::math::Vector3d vel_, 
     ignition::math::Vector3d af_, 
-    ignition::math::Vector3d sf_, 
+    ignition::math::Vector3d pos_, 
     double yaw_)
 {
 
@@ -373,15 +373,15 @@ void ActorPlugin::CallPublisher(
   force_direction.Normalize();
   
   geometry_msgs::Twist actor_vel_twist;
-  actor_vel_twist.linear.x = vel_.X();
-  actor_vel_twist.linear.y = vel_.Y();
-  actor_vel_twist.linear.z = vel_.Z();
+  actor_vel_twist.linear.x = pos_.X();
+  actor_vel_twist.linear.y = pos_.Y();
+  actor_vel_twist.linear.z = pos_.Z();
   actor_vel_twist.angular.x = af_.Length() * cos(force_direction.Radian());
   actor_vel_twist.angular.y = af_.Length() * sin(force_direction.Radian());
   
-  //if (this->actor->GetName()=="actor1"){
-    //ROS_ERROR("%s, force x: %lf, force y: %lf", this->actor->GetName().c_str(), actor_vel_twist.angular.x, actor_vel_twist.angular.y);
-  //}
+  if (this->actor->GetName()=="actor1"){
+    ROS_ERROR("%s, force x: %lf, force y: %lf", this->actor->GetName().c_str(), actor_vel_twist.angular.x, actor_vel_twist.angular.y);
+  }
   actor_vel_twist.angular.z = yaw_;
   VelPublisher.publish(actor_vel_twist);   
 }
