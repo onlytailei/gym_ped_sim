@@ -280,7 +280,7 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   double distanceTraveled = (pose.Pos() -
       this->actor->WorldPose().Pos()).Length();
 
-  CallPublisher(this->velocity, a, pos.Normalize(), new_yaw.Radian()); 
+  CallPublisher(a, pos.Normalize(), socialForce_, new_yaw.Radian()); 
   this->actor->SetWorldPose(pose, false, false);
   this->actor->SetScriptTime(this->actor->ScriptTime() +
       (distanceTraveled * this->animationFactor));
@@ -363,26 +363,31 @@ void ActorPlugin::QueueThread()
 }
 
 void ActorPlugin::CallPublisher(
-    ignition::math::Vector3d vel_, 
     ignition::math::Vector3d af_, 
     ignition::math::Vector3d pos_, 
+    ignition::math::Vector3d sf_, 
     double yaw_)
 {
 
-  ignition::math::Angle force_direction = atan2(af_.Y(), af_.X()) - yaw_;
-  force_direction.Normalize();
+  ignition::math::Angle force_direction_ = atan2(af_.Y(), af_.X()) - yaw_;
+  force_direction_.Normalize();
   
+  ignition::math::Angle pos_direction_ = atan2(pos_.Y(), pos_.X()) - yaw_;
+  pos_direction_.Normalize();
+  
+  ignition::math::Angle sf_direction_ = atan2(sf_.Y(), sf_.X()) - yaw_;
+  sf_direction_.Normalize();
+
   geometry_msgs::Twist actor_vel_twist;
-  actor_vel_twist.linear.x = pos_.X();
-  actor_vel_twist.linear.y = pos_.Y();
-  actor_vel_twist.linear.z = pos_.Z();
-  actor_vel_twist.angular.x = af_.Length() * cos(force_direction.Radian());
-  actor_vel_twist.angular.y = af_.Length() * sin(force_direction.Radian());
-  
-  if (this->actor->GetName()=="actor1"){
-    ROS_ERROR("%s, force x: %lf, force y: %lf", this->actor->GetName().c_str(), actor_vel_twist.angular.x, actor_vel_twist.angular.y);
-  }
-  actor_vel_twist.angular.z = yaw_;
+  actor_vel_twist.linear.x = pos_.Length() * cos(pos_direction_.Radian());
+  actor_vel_twist.linear.y = pos_.Length() * sin(pos_direction_.Radian());
+  actor_vel_twist.linear.z = sf_.Length() * cos(sf_direction_.Radian());
+  actor_vel_twist.angular.x = af_.Length() * cos(force_direction_.Radian());
+  actor_vel_twist.angular.y = af_.Length() * sin(force_direction_.Radian());
+  //if (this->actor->GetName()=="actor1"){
+    //ROS_ERROR("%s, force x: %lf, force y: %lf", this->actor->GetName().c_str(), actor_vel_twist.angular.x, actor_vel_twist.angular.y);
+  //}
+  actor_vel_twist.angular.z = sf_.Length()*sin(sf_direction_.Radian());
   VelPublisher.publish(actor_vel_twist);   
 }
 

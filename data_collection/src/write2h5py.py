@@ -49,7 +49,9 @@ class SAVE_DATA2H5PY(object):
         h5_file_['y_force'] = velforce.angular.y 
         h5_file_['x_target'] = velforce.linear.x 
         h5_file_['y_target'] = velforce.linear.y 
-        h5_file_['yaw'] = velforce.angular.y 
+        h5_file_['x_sf'] = velforce.linear.z 
+        h5_file_['y_sf'] = velforce.angular.z 
+        #h5_file_['yaw'] = velforce.angular.y 
         rospy.logerr("=======force %lf, %lf", velforce.angular.x, velforce.angular.y)
 
         scan = all_msgs_.scan.ranges
