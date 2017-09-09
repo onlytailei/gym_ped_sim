@@ -43,7 +43,7 @@ speedOfActor = dict()
 
 startingPosition = {0:(-3,-0.5), 1:(-2.5,0.5), 2:(3, -0.5), 3:(2.5,0.5)}
 targetPosition = {0: (2.5,-0.5), 1:(3,0.5),   2:(-2.5, -0.5), 3:(-3,0.5)}
-speedOfActor = {0:1.0,1:0.9,2:1.1,3:1.2}
+speedOfActor = {0:1.2,1:0.9,2:1.1,3:1.2}
 #for item in range(4):
 #    speedOfActor[item] = 1.00
 

@@ -4,11 +4,11 @@
     <rosparam command="load" file="$(find turtlebot3_social)/param/forceFactors.yaml" />    
    
     <param name="TB3_WITH_ACTOR" type="string" value="actor1" /> 
-    <param name="BASE_WORLD" type="string" value="empty.world" /> 
+    <param name="BASE_WORLD" type="string" value="crossing3m.world" /> 
     <param name="SAVE_FILE" type="string" value="/root/dataset/overtaking_4_a1" /> 
-    <node name="create_world" pkg="actor_services" type="passing_wall.py"/>
+    <node name="create_world" pkg="actor_services" type="crossing_wall_4.py"/>
 
-    <param name="ACTOR_NUMBER" type="int" value="2" />
+    <param name="ACTOR_NUMBER" type="int" value="4" />
     <node name="tfped2defaultworld" pkg="turtlebot3_social" type="tfped2defaultworld.py"/>
     <node name="tfodom2actor" pkg="turtlebot3_social" type="tfodom2actor.py"/>
 

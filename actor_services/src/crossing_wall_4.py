@@ -55,7 +55,7 @@ speedOfActor[2] = 0.7
 
 startingPosition[3] = (0, 4)
 targetPosition[3] = (0, -4)
-speedOfActor[3] = 1.1
+speedOfActor[3] = 1.2
 
 
 actor_list = []

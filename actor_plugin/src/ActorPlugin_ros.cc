@@ -384,9 +384,9 @@ void ActorPlugin::CallPublisher(
   actor_vel_twist.linear.z = sf_.Length() * cos(sf_direction_.Radian());
   actor_vel_twist.angular.x = af_.Length() * cos(force_direction_.Radian());
   actor_vel_twist.angular.y = af_.Length() * sin(force_direction_.Radian());
-  //if (this->actor->GetName()=="actor1"){
-    //ROS_ERROR("%s, force x: %lf, force y: %lf", this->actor->GetName().c_str(), actor_vel_twist.angular.x, actor_vel_twist.angular.y);
-  //}
+  if (this->actor->GetName()=="actor1"){
+    ROS_ERROR("%s, force x: %lf, force y: %lf", this->actor->GetName().c_str(), actor_vel_twist.angular.x, actor_vel_twist.angular.y);
+  }
   actor_vel_twist.angular.z = sf_.Length()*sin(sf_direction_.Radian());
   VelPublisher.publish(actor_vel_twist);   
 }

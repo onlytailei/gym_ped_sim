@@ -43,11 +43,11 @@ targetPosition = dict()
 speedOfActor = dict()
 startingPosition[0] = (-distance/2, 0)
 targetPosition[0] = (distance/2, 0)
-speedOfActor[0] = 1.00
+speedOfActor[0] = 1.20
 
 startingPosition[1] = (distance/2, 0)
 targetPosition[1] = (-distance/2, 0)
-speedOfActor[1] = 1.00
+speedOfActor[1] = 1.20
 
 
 actor_list = []
