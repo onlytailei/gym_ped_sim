@@ -38,7 +38,7 @@ roslaunch turtlebot3_social default.launch
 
 ### Node Details
 - **actor_plugin**    
-  Build base on a [Gazebo official example](http://gazebosim.org/tutorials?cat=guided_i&tut=guided_i6). This node broadcasts the tf of every actor. [Social force model](http://vision.cse.psu.edu/courses/Tracking/vlpr12/HelbingSocialForceModel95.pdf).
+  Build based on a [Gazebo official example](http://gazebosim.org/tutorials?cat=guided_i&tut=guided_i6). This node broadcasts the tf of every actor. [Social force model](http://vision.cse.psu.edu/courses/Tracking/vlpr12/HelbingSocialForceModel95.pdf) is applied in every actor to interactive with each other.
 
 - **actor_services**    
   The *random_create.py* helps to create a gazebo sdf file quickly. There are also the launch file and rviz file for test and visualization.
