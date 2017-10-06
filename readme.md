@@ -59,4 +59,6 @@ The collected [pedestrian navigation dataset](https://drive.google.com/open?id=0
 - social force
 - sum force
 
+## Interactive interface
+Please reference [gym_style_gazebo](https://github.com/onlytailei/gym_style_gazebo)
 
