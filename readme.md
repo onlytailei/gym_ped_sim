@@ -7,6 +7,9 @@ This is a ros pkg for gazebo [actor](http://gazebosim.org/tutorials?tut=actor&ca
 * Ros kinetic
 * Gazebo 8
 * python-lxml
+* turtlebot3
+* turtlebot3_msgs
+* turtlebot3_simulations
 
 ### Build
 
@@ -21,13 +24,13 @@ sudo apt-get install ros-kinetic-gazebo8-ros-pkgs
 3. Build packages
 ```
 cd /path/to/workspace/src
-git clone https://github.com/onlytailei/Gazebo_ROS_Pedestrians.git
+git clone git@github.com:onlytailei/gym_ped_sim.git
 catkin build
 ```
 
 ### Example
 ```
-roslaunch actor_services ped_launch.launch
+roslaunch turtlebot3_social default.launch
 ```
 
 ### Node Details
