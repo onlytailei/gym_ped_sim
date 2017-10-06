@@ -28,8 +28,8 @@ git clone git@github.com:onlytailei/gym_ped_sim.git
 catkin build
 ```
 
-![aa](./rviz_view.png)
-![aa](./gazebo_view.png)
+![rviz](./rviz_view.png)
+![gazebo](./gazebo_view.png)
 
 ### Example
 ```
