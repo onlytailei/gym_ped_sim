@@ -4,8 +4,8 @@ This is a ros pkg for gazebo [actor](http://gazebosim.org/tutorials?tut=actor&ca
 
 ### Dependencies
 * Ubuntu 16.04
-* Ros kinetic
-* Gazebo 8
+* ROS-kinetic
+* Gazebo 8 (with actor suport)
 * python-lxml
 * turtlebot3
 * turtlebot3_msgs
@@ -15,7 +15,7 @@ This is a ros pkg for gazebo [actor](http://gazebosim.org/tutorials?tut=actor&ca
 
 1. Add the repositories of [Gazebo 8](http://gazebosim.org/tutorials?tut=install_ubuntu) and [ROS kinetic](http://wiki.ros.org/indigo/Installation/Ubuntu)    
 
-2. Install Gazebo 8 and Ros kinetic in buntu 16.04.
+2. Install Gazebo 8, Ros kinetic in buntu 16.04 and other dependencies.
 ```
 sudo apt-get install ros-kinetic-desktop-full
 sudo apt-get install ros-kinetic-gazebo8-ros-pkgs
@@ -27,6 +27,9 @@ cd /path/to/workspace/src
 git clone git@github.com:onlytailei/gym_ped_sim.git
 catkin build
 ```
+
+![aa](./rviz_view.png)
+![aa](./gazebo_view.png)
 
 ### Example
 ```
