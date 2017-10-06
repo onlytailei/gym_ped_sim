@@ -39,3 +39,6 @@ roslaunch turtlebot3_social default.launch
 
 - **actor_services**    
   The *random_create.py* helps to create a gazebo sdf file quickly. There are also the launch file and rviz file for test and visualization.
+
+### Data Set
+[Pedestrian navigation dataset](https://drive.google.com/open?id=0Bz6_GtsnLN8zZXFKTHNibHVrMlk)
