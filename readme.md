@@ -41,7 +41,22 @@ roslaunch turtlebot3_social default.launch
   Build based on a [Gazebo official example](http://gazebosim.org/tutorials?cat=guided_i&tut=guided_i6). This node broadcasts the tf of every actor. [Social force model](http://vision.cse.psu.edu/courses/Tracking/vlpr12/HelbingSocialForceModel95.pdf) is applied in every actor to interactive with each other.
 
 - **actor_services**    
-  The *random_create.py* helps to create a gazebo sdf file quickly. There are also the launch file and rviz file for test and visualization.
+  The python files help to create several gazebo sdf files quickly. There is a rviz file for visualization.
+
+- **turtlebo3_social**    
+  In our socially compliant pedestrian simulator, we collect data by mounting a depth sensor onto one of the pedestrians, to the height matching that of real-world setups. Then, the social force model, as described in the paper, is used to label each incoming depth
+image with their corresponding social force.
+
+- **data_collection**    
+  To save the related dataset.
 
 ### Data Set
-[Pedestrian navigation dataset](https://drive.google.com/open?id=0Bz6_GtsnLN8zZXFKTHNibHVrMlk)
+The collected [pedestrian navigation dataset](https://drive.google.com/open?id=0Bz6_GtsnLN8zZXFKTHNibHVrMlk) contains:
+- depth image
+- rgb image
+- target 
+- social force classification
+- social force
+- sum force
+
+
