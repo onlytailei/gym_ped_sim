@@ -62,3 +62,14 @@ The collected [pedestrian navigation dataset](https://drive.google.com/open?id=0
 ## Interactive interface
 Please reference [gym_style_gazebo](https://github.com/onlytailei/gym_style_gazebo)
 
+This is the reference implementation of the plugins and for the paper **Socially-compliant Navigation through Raw Depth Inputs with Generative Adversarial Imitation Learning**
+If it helps your research, please cite:
+```
+@article{tai2017socially,
+  title={Socially-compliant Navigation through Raw Depth Inputs with Generative Adversarial Imitation Learning},
+  author={Tai, Lei and Zhang, Jingwei and Liu, Ming and Burgard, Wolfram},
+  journal={arXiv preprint arXiv:1710.02543},
+  year={2017}
+}
+```
+
