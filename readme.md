@@ -50,8 +50,8 @@ image with their corresponding social force.
 - **data_collection**    
   To save the related dataset.
 
-### Data Set
-The collected [pedestrian navigation dataset](https://drive.google.com/open?id=0Bz6_GtsnLN8zZXFKTHNibHVrMlk) contains:
+### Dataset
+The collected [pedestrian navigation dataset](https://ram-lab.com/file/tai_icra_2018_dataset.zip) contains:
 - depth image
 - rgb image
 - target 
