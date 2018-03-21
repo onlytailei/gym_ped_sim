@@ -68,11 +68,12 @@ Please reference [gym_style_gazebo](https://github.com/onlytailei/gym_style_gaze
 This is the reference implementation of the plugins and for the paper **Socially-compliant Navigation through Raw Depth Inputs with Generative Adversarial Imitation Learning**. 
 If it helps your research, please cite:
 ```
-@article{tai2017socially,
-  title={Socially-compliant Navigation through Raw Depth Inputs with Generative Adversarial Imitation Learning},
-  author={Tai, Lei and Zhang, Jingwei and Liu, Ming and Burgard, Wolfram},
-  journal={arXiv preprint arXiv:1710.02543},
-  year={2017}
-}
+@inproceedings{tai2018social,
+                booktitle={Robotics and Automation (ICRA), 2018 IEEE International Conference on},
+                title={Socially-compliant Navigation through Raw Depth Inputs with Generative Adversarial Imitation Learning},
+                author={Tai, Lei and Zhang, Jingwei and Liu, Ming and Burgard, Wolfram},
+                year={2018}, 
+                month={May},
+              }
 ```
 
