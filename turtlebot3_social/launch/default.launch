@@ -1,16 +1,15 @@
 <?xml version="1.0"?>
 
 <launch>
-    <rosparam command="load" file="$(find turtlebot3_social)/param/forceFactors.yaml" />    
-   
-    <param name="TB3_WITH_ACTOR" type="string" value="actor1" /> 
-    <param name="BASE_WORLD" type="string" value="empty.world" /> 
-    <param name="SAVE_FILE" type="string" value="/root/dataset/overtaking_4_a1" /> 
+    <rosparam command="load" file="$(find turtlebot3_social)/param/forceFactors.yaml" />
+
+    <param name="TB3_WITH_ACTOR" type="string" value="actor1" />
+    <param name="BASE_WORLD" type="string" value="empty.world" />
+    <param name="SAVE_FILE" type="string" value="/root/dataset/overtaking_4_a1" />
     <node name="create_world" pkg="actor_services" type="passing_wall_4.py"/>
 
     <param name="ACTOR_NUMBER" type="int" value="4" />
     <node name="tfped2defaultworld" pkg="turtlebot3_social" type="tfped2defaultworld.py"/>
-    <node name="tfodom2actor" pkg="turtlebot3_social" type="tfodom2actor.py"/>
 
     <arg name="world_file"  default="$(find actor_services)/worlds/ped_world.world"/>
     <arg name="gui" default="false"/>
@@ -22,10 +21,12 @@
         <param name="/use_sim_time" value="true" />
     </group>
 
+    <!--<node name="tfodom2actor" pkg="turtlebot3_social" type="tfodom2actor.py"/>-->
+
 
     <node name="gazebo" pkg="gazebo_ros" type="gzserver" output="screen"
         args="$(arg world_file)" />
-    
+
     <group if="$(arg rviz)">
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(find actor_services)/rviz/tf_show.rviz"/>
     </group>
@@ -35,18 +36,18 @@
         <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen"/>
     </group>
 
-    <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle]"/>
-    <arg name="x_pos" default="0.0"/>
-    <arg name="y_pos" default="0.0"/>
-    <arg name="z_pos" default="0.0"/>
+    <!--<arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle]"/>-->
+    <!--<arg name="x_pos" default="0.0"/>-->
+    <!--<arg name="y_pos" default="0.0"/>-->
+    <!--<arg name="z_pos" default="0.0"/>-->
 
-    <param name="robot_description" command="$(find xacro)/xacro.py $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+    <!--<param name="robot_description" command="$(find xacro)/xacro.py $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />-->
 
-    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model turtlebot3_burger -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
-    
-    <group if="$(arg save)">
-        <node name="data_collection" pkg="data_collection" type="data_collection_node" />
-        <node name="save2h5py" pkg="data_collection" type="write2h5py.py" />
-    </group>
+    <!--<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model turtlebot3_burger -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />-->
+ 
+    <!--<group if="$(arg save)">-->
+        <!--<node name="data_collection" pkg="data_collection" type="data_collection_node" />-->
+        <!--<node name="save2h5py" pkg="data_collection" type="write2h5py.py" />-->
+    <!--</group>-->
 
 </launch>

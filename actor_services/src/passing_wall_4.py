@@ -71,9 +71,9 @@ for item in range(4):
     animation = Element("animation", name="walking")
     animate_fn = Element("filename")
     if (item==int(rospy.get_param("TB3_WITH_ACTOR")[-1])) and (not rospy.get_param("TB3_AS_ACTOR")):
-    	animate_fn.text = "stand.dae"
+        animate_fn.text = "stand.dae"
     else:
-    	animate_fn.text = "walk.dae"
+        animate_fn.text = "walk.dae"
     interpolate_x = Element("interpolate_x")
     interpolate_x.text = "true"
     animate_scale = Element("scale")
