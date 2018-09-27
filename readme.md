@@ -81,7 +81,7 @@ If it helps your research, please cite:
 ```
 
 ## References
-[srl-freiburg/pedsim_ros](https://github.com/srl-freiburg/pedsim_ros)
+[srl-freiburg/pedsim_ros](https://github.com/srl-freiburg/pedsim_ros)    
 [social force model](http://vision.cse.psu.edu/courses/Tracking/vlpr12/HelbingSocialForceModel95.pdf)
 
 
