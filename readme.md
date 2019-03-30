@@ -53,7 +53,6 @@ image with their corresponding social force.
 ### Dataset
 The collected [pedestrian navigation dataset](https://ram-lab.com/file/tai_icra_2018_dataset.zip) contains:
 - depth image
-- rgb image
 - target 
 - social force classification
 - social force
